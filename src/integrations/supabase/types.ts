@@ -14,7 +14,231 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      control_settings: {
+        Row: {
+          heating_enabled: boolean | null
+          id: string
+          irrigation_enabled: boolean | null
+          lighting_enabled: boolean | null
+          target_humidity: number | null
+          target_soil_moisture: number | null
+          target_temperature: number | null
+          updated_at: string
+          user_id: string
+          ventilation_enabled: boolean | null
+        }
+        Insert: {
+          heating_enabled?: boolean | null
+          id?: string
+          irrigation_enabled?: boolean | null
+          lighting_enabled?: boolean | null
+          target_humidity?: number | null
+          target_soil_moisture?: number | null
+          target_temperature?: number | null
+          updated_at?: string
+          user_id: string
+          ventilation_enabled?: boolean | null
+        }
+        Update: {
+          heating_enabled?: boolean | null
+          id?: string
+          irrigation_enabled?: boolean | null
+          lighting_enabled?: boolean | null
+          target_humidity?: number | null
+          target_soil_moisture?: number | null
+          target_temperature?: number | null
+          updated_at?: string
+          user_id?: string
+          ventilation_enabled?: boolean | null
+        }
+        Relationships: []
+      }
+      iot_devices: {
+        Row: {
+          battery_level: number | null
+          created_at: string
+          device_name: string
+          device_type: string
+          firmware_version: string | null
+          id: string
+          last_seen: string | null
+          status: string | null
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          battery_level?: number | null
+          created_at?: string
+          device_name: string
+          device_type: string
+          firmware_version?: string | null
+          id?: string
+          last_seen?: string | null
+          status?: string | null
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          battery_level?: number | null
+          created_at?: string
+          device_name?: string
+          device_type?: string
+          firmware_version?: string | null
+          id?: string
+          last_seen?: string | null
+          status?: string | null
+          user_id?: string
+          zone?: string | null
+        }
+        Relationships: []
+      }
+      plants: {
+        Row: {
+          category: string
+          created_at: string
+          growth_stage: number | null
+          health_status: string | null
+          id: string
+          image_url: string | null
+          name: string
+          planted_date: string
+          species: string
+          updated_at: string
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          growth_stage?: number | null
+          health_status?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          planted_date?: string
+          species: string
+          updated_at?: string
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          growth_stage?: number | null
+          health_status?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          planted_date?: string
+          species?: string
+          updated_at?: string
+          user_id?: string
+          zone?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      schedules: {
+        Row: {
+          created_at: string
+          days_of_week: number[] | null
+          end_time: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          schedule_type: string
+          start_time: string
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          created_at?: string
+          days_of_week?: number[] | null
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          schedule_type: string
+          start_time: string
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          created_at?: string
+          days_of_week?: number[] | null
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          schedule_type?: string
+          start_time?: string
+          user_id?: string
+          zone?: string | null
+        }
+        Relationships: []
+      }
+      sensor_readings: {
+        Row: {
+          co2_level: number | null
+          device_id: string | null
+          humidity: number | null
+          id: string
+          light_level: number | null
+          recorded_at: string
+          soil_moisture: number | null
+          temperature: number | null
+          user_id: string
+        }
+        Insert: {
+          co2_level?: number | null
+          device_id?: string | null
+          humidity?: number | null
+          id?: string
+          light_level?: number | null
+          recorded_at?: string
+          soil_moisture?: number | null
+          temperature?: number | null
+          user_id: string
+        }
+        Update: {
+          co2_level?: number | null
+          device_id?: string | null
+          humidity?: number | null
+          id?: string
+          light_level?: number | null
+          recorded_at?: string
+          soil_moisture?: number | null
+          temperature?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
