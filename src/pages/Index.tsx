@@ -5,10 +5,12 @@ import { SensorCard } from '@/components/dashboard/SensorCard';
 import { PlantCard } from '@/components/dashboard/PlantCard';
 import { ControlCard } from '@/components/dashboard/ControlCard';
 import { AlertCard } from '@/components/dashboard/AlertCard';
+import { AIPlantAdvisor } from '@/components/dashboard/AIPlantAdvisor';
 import { SensorChart } from '@/components/charts/SensorChart';
 import { Greenhouse3D } from '@/components/3d/Greenhouse3D';
 import { VirtualField3D } from '@/components/3d/VirtualField3D';
-import { 
+import { PlantGrowth3D } from '@/components/3d/PlantGrowth3D';
+import {
   sensorData, 
   plants, 
   controlSystems, 
@@ -147,8 +149,9 @@ const Index = () => {
           {activeTab === '3d-view' && (
             <div className="space-y-6">
               <Tabs defaultValue="greenhouse" className="w-full">
-                <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsList className="grid w-full max-w-xl grid-cols-3">
                   <TabsTrigger value="greenhouse">3D Greenhouse</TabsTrigger>
+                  <TabsTrigger value="growth">Plant Growth</TabsTrigger>
                   <TabsTrigger value="field">Virtual Field</TabsTrigger>
                 </TabsList>
 
@@ -176,6 +179,20 @@ const Index = () => {
                   </div>
                 </TabsContent>
 
+                <TabsContent value="growth" className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(['tomato', 'strawberry', 'pepper', 'carrot'] as const).map((plantType) => (
+                      <div key={plantType} className="glass-card p-4">
+                        <h3 className="font-semibold capitalize mb-2">{plantType} Growth</h3>
+                        <div className="h-[350px] rounded-xl overflow-hidden bg-card">
+                          <PlantGrowth3D plantType={plantType} currentWeek={growthWeek} maxWeeks={16} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">Week-by-week growth visualization • Use simulation controls above</p>
+                </TabsContent>
+
                 <TabsContent value="field" className="space-y-4">
                   <div className="glass-card p-4">
                     <h3 className="font-semibold mb-4">Virtual Field with Environmental Effects</h3>
@@ -185,6 +202,9 @@ const Index = () => {
                   </div>
                 </TabsContent>
               </Tabs>
+
+              {/* AI Advisor */}
+              <AIPlantAdvisor sensorData={{ temperature: avgTemp, humidity: avgHumidity, moisture: avgMoisture, light: 800 }} />
             </div>
           )}
 
