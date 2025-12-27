@@ -10,8 +10,9 @@ import { SensorChart } from '@/components/charts/SensorChart';
 import { Greenhouse3D } from '@/components/3d/Greenhouse3D';
 import { VirtualField3D } from '@/components/3d/VirtualField3D';
 import { PlantGrowth3D } from '@/components/3d/PlantGrowth3D';
+import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import {
-  sensorData, 
+  sensorData as staticSensorData, 
   plants, 
   controlSystems, 
   alerts as initialAlerts,
@@ -24,7 +25,7 @@ import {
 } from '@/data/greenhouseData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Play, Pause, RotateCcw, Download, Wifi, WifiOff, Battery, Signal } from 'lucide-react';
+import { Play, Pause, RotateCcw, Download, Wifi, WifiOff, Battery, Signal, Radio } from 'lucide-react';
 import greenhouseHero from '@/assets/greenhouse-hero.jpg';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,9 @@ const Index = () => {
   const [alertsList, setAlertsList] = useState(initialAlerts);
   const [growthWeek, setGrowthWeek] = useState(8);
   const [isSimulating, setIsSimulating] = useState(false);
+  
+  // Real-time sensor data
+  const { sensorData: realtimeSensorData, isConnected } = useRealtimeSensors();
 
   const historicalData = useMemo(() => generateHistoricalData(), []);
   const analyticsData = useMemo(() => generateAnalyticsData(), []);
@@ -78,10 +82,28 @@ const Index = () => {
     return titles[activeTab] || 'Dashboard';
   };
 
-  const currentSensors = sensorData.slice(0, 4);
-  const avgTemp = currentSensors.find(s => s.type === 'temperature')?.value || 24;
-  const avgHumidity = currentSensors.find(s => s.type === 'humidity')?.value || 65;
-  const avgMoisture = currentSensors.find(s => s.type === 'moisture')?.value || 70;
+  // Merge static sensor data with real-time values
+  const currentSensors = useMemo(() => {
+    return staticSensorData.slice(0, 4).map(sensor => {
+      if (sensor.type === 'temperature') {
+        return { ...sensor, value: realtimeSensorData.temperature };
+      }
+      if (sensor.type === 'humidity') {
+        return { ...sensor, value: realtimeSensorData.humidity };
+      }
+      if (sensor.type === 'moisture') {
+        return { ...sensor, value: realtimeSensorData.moisture };
+      }
+      if (sensor.type === 'light') {
+        return { ...sensor, value: realtimeSensorData.light };
+      }
+      return sensor;
+    });
+  }, [realtimeSensorData]);
+
+  const avgTemp = realtimeSensorData.temperature;
+  const avgHumidity = realtimeSensorData.humidity;
+  const avgMoisture = realtimeSensorData.moisture;
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -115,7 +137,20 @@ const Index = () => {
 
               {/* Sensors Grid */}
               <div>
-                <h3 className="font-semibold mb-4">Live Sensor Data</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold">Live Sensor Data</h3>
+                  <div className="flex items-center gap-2">
+                    <Radio className={cn("w-4 h-4", isConnected ? "text-success animate-pulse" : "text-muted-foreground")} />
+                    <span className="text-xs text-muted-foreground">
+                      {isConnected ? 'Real-time connected' : 'Using cached data'}
+                    </span>
+                    {realtimeSensorData.lastUpdated && (
+                      <span className="text-xs text-muted-foreground">
+                        • Updated {new Date(realtimeSensorData.lastUpdated).toLocaleTimeString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {currentSensors.map(sensor => (
                     <SensorCard key={sensor.id} sensor={sensor} />
@@ -219,7 +254,7 @@ const Index = () => {
           {activeTab === 'sensors' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {sensorData.map(sensor => (
+                {staticSensorData.map(sensor => (
                   <SensorCard key={sensor.id} sensor={sensor} />
                 ))}
               </div>
