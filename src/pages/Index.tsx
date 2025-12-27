@@ -10,6 +10,7 @@ import { SensorChart } from '@/components/charts/SensorChart';
 import { Greenhouse3D } from '@/components/3d/Greenhouse3D';
 import { VirtualField3D } from '@/components/3d/VirtualField3D';
 import { PlantGrowth3D } from '@/components/3d/PlantGrowth3D';
+import { ScheduleCalendar } from '@/components/dashboard/ScheduleCalendar';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import {
   sensorData as staticSensorData, 
@@ -280,25 +281,7 @@ const Index = () => {
           )}
 
           {activeTab === 'schedules' && (
-            <div className="glass-card p-6">
-              <h3 className="font-semibold mb-4">Irrigation & Lighting Schedules</h3>
-              <div className="space-y-3">
-                {schedules.map(schedule => (
-                  <div key={schedule.id} className={cn("p-4 rounded-lg border", schedule.isActive ? "bg-primary/5 border-primary/20" : "bg-muted/50 border-border")}>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium">{schedule.zoneName} - {schedule.type}</p>
-                        <p className="text-sm text-muted-foreground">{schedule.startTime} - {schedule.endTime}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{schedule.days.join(', ')}</p>
-                      </div>
-                      <span className={cn("zone-badge", schedule.isActive ? "bg-success/20 text-success" : "bg-muted text-muted-foreground")}>
-                        {schedule.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ScheduleCalendar />
           )}
 
           {activeTab === 'devices' && (
