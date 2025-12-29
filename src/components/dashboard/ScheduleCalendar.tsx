@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, startOfWeek, addDays, isSameDay, parseISO, setHours, setMinutes } from 'date-fns';
-import { Calendar, Clock, Droplets, Lightbulb, Wind, Plus, GripVertical, Trash2, Edit2 } from 'lucide-react';
+import { Calendar, Clock, Droplets, Lightbulb, Wind, Plus, GripVertical, Trash2, Edit2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,22 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Schedule } from '@/types/greenhouse';
 import { zones } from '@/data/greenhouseData';
-
-interface ScheduleEvent {
-  id: string;
-  title: string;
-  type: 'irrigation' | 'lighting' | 'ventilation';
-  zone: string;
-  startTime: string;
-  endTime: string;
-  days: number[];
-  isActive: boolean;
-  color: string;
-}
+import { useSchedules, ScheduleEvent } from '@/hooks/useSchedules';
+import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ScheduleCalendarProps {
   initialSchedules?: Schedule[];
@@ -51,19 +41,15 @@ const formatHour = (hour: number) => {
 };
 
 export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({ initialSchedules }) => {
-  const [schedules, setSchedules] = useState<ScheduleEvent[]>([
-    { id: '1', title: 'Morning Irrigation', type: 'irrigation', zone: 'Zone A', startTime: '06:00', endTime: '06:30', days: [1, 3, 5], isActive: true, color: 'bg-blue-500' },
-    { id: '2', title: 'Grow Lights', type: 'lighting', zone: 'All Zones', startTime: '05:00', endTime: '20:00', days: [0, 1, 2, 3, 4, 5, 6], isActive: true, color: 'bg-amber-500' },
-    { id: '3', title: 'Afternoon Ventilation', type: 'ventilation', zone: 'Zone A', startTime: '12:00', endTime: '14:00', days: [1, 2, 3, 4, 5], isActive: true, color: 'bg-emerald-500' },
-    { id: '4', title: 'Evening Irrigation', type: 'irrigation', zone: 'Zone B', startTime: '18:00', endTime: '18:30', days: [1, 2, 3, 4, 5], isActive: true, color: 'bg-blue-500' },
-    { id: '5', title: 'Strawberry Watering', type: 'irrigation', zone: 'Zone D', startTime: '07:00', endTime: '07:20', days: [2, 4, 6], isActive: false, color: 'bg-blue-500' },
-  ]);
-
+  const { user } = useAuth();
+  const { schedules, loading, createSchedule, updateSchedule, deleteSchedule } = useSchedules();
+  
   const [draggedSchedule, setDraggedSchedule] = useState<ScheduleEvent | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ScheduleEvent | null>(null);
   const [selectedView, setSelectedView] = useState<'week' | 'day'>('week');
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
+  const [saving, setSaving] = useState(false);
 
   const [newSchedule, setNewSchedule] = useState<Partial<ScheduleEvent>>({
     title: '',
@@ -85,7 +71,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({ initialSched
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = (e: React.DragEvent, dayIndex: number, hour: number) => {
+  const handleDrop = async (e: React.DragEvent, dayIndex: number, hour: number) => {
     e.preventDefault();
     if (!draggedSchedule) return;
 
@@ -94,27 +80,27 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({ initialSched
     const newStartTime = `${String(Math.floor(newStartHour)).padStart(2, '0')}:00`;
     const newEndTime = `${String(Math.floor(newStartHour + duration)).padStart(2, '0')}:${String(Math.round((duration % 1) * 60)).padStart(2, '0')}`;
 
-    setSchedules(prev => prev.map(s => {
-      if (s.id === draggedSchedule.id) {
-        const newDays = s.days.includes(dayIndex) ? s.days : [...s.days, dayIndex].sort();
-        return { ...s, startTime: newStartTime, endTime: newEndTime, days: newDays };
-      }
-      return s;
-    }));
+    const newDays = draggedSchedule.days.includes(dayIndex) 
+      ? draggedSchedule.days 
+      : [...draggedSchedule.days, dayIndex].sort();
+    
+    const updatedEvent: ScheduleEvent = {
+      ...draggedSchedule,
+      startTime: newStartTime,
+      endTime: newEndTime,
+      days: newDays,
+    };
 
-    toast({
-      title: 'Schedule Updated',
-      description: `${draggedSchedule.title} moved to ${FULL_DAYS[dayIndex]} at ${formatHour(hour)}`,
-    });
-
+    await updateSchedule(updatedEvent);
     setDraggedSchedule(null);
   };
 
-  const handleAddSchedule = () => {
+  const handleAddSchedule = async () => {
     if (!newSchedule.title || !newSchedule.type) return;
 
-    const schedule: ScheduleEvent = {
-      id: Date.now().toString(),
+    setSaving(true);
+    
+    const schedule: Omit<ScheduleEvent, 'id'> = {
       title: newSchedule.title!,
       type: newSchedule.type as 'irrigation' | 'lighting' | 'ventilation',
       zone: newSchedule.zone!,
@@ -126,13 +112,12 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({ initialSched
     };
 
     if (editingSchedule) {
-      setSchedules(prev => prev.map(s => s.id === editingSchedule.id ? schedule : s));
-      toast({ title: 'Schedule Updated', description: `${schedule.title} has been updated.` });
+      await updateSchedule({ ...schedule, id: editingSchedule.id });
     } else {
-      setSchedules(prev => [...prev, schedule]);
-      toast({ title: 'Schedule Created', description: `${schedule.title} has been added.` });
+      await createSchedule(schedule);
     }
 
+    setSaving(false);
     setIsDialogOpen(false);
     setEditingSchedule(null);
     setNewSchedule({
@@ -152,10 +137,38 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({ initialSched
     setIsDialogOpen(true);
   };
 
-  const handleDeleteSchedule = (id: string) => {
-    setSchedules(prev => prev.filter(s => s.id !== id));
-    toast({ title: 'Schedule Deleted', description: 'The schedule has been removed.' });
+  const handleDeleteSchedule = async (id: string) => {
+    await deleteSchedule(id);
   };
+
+  // Show login prompt if not authenticated
+  if (!user) {
+    return (
+      <Card className="p-6">
+        <div className="text-center text-muted-foreground">
+          <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>Please log in to manage your schedules.</p>
+        </div>
+      </Card>
+    );
+  }
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-10 w-40" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const toggleDay = (day: number) => {
     setNewSchedule(prev => ({
@@ -330,8 +343,11 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({ initialSched
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleAddSchedule}>{editingSchedule ? 'Update' : 'Create'}</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={saving}>Cancel</Button>
+                <Button onClick={handleAddSchedule} disabled={saving}>
+                  {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  {editingSchedule ? 'Update' : 'Create'}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
