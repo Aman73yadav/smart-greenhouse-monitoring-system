@@ -11,6 +11,7 @@ import { Greenhouse3D } from '@/components/3d/Greenhouse3D';
 import { VirtualField3D } from '@/components/3d/VirtualField3D';
 import { PlantGrowth3D } from '@/components/3d/PlantGrowth3D';
 import { ScheduleCalendar } from '@/components/dashboard/ScheduleCalendar';
+import { PlantGrowthTimeline } from '@/components/dashboard/PlantGrowthTimeline';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import {
   sensorData as staticSensorData, 
@@ -215,11 +216,15 @@ const Index = () => {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="growth" className="space-y-4">
+                <TabsContent value="growth" className="space-y-6">
+                  {/* Plant Growth Timeline */}
+                  <PlantGrowthTimeline />
+                  
+                  {/* 3D Plant Growth Visualizations */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(['tomato', 'strawberry', 'pepper', 'carrot'] as const).map((plantType) => (
                       <div key={plantType} className="glass-card p-4">
-                        <h3 className="font-semibold capitalize mb-2">{plantType} Growth</h3>
+                        <h3 className="font-semibold capitalize mb-2">{plantType} 3D Growth</h3>
                         <div className="h-[350px] rounded-xl overflow-hidden bg-card">
                           <PlantGrowth3D plantType={plantType} currentWeek={growthWeek} maxWeeks={16} />
                         </div>
