@@ -10,9 +10,13 @@ import { SensorChart } from '@/components/charts/SensorChart';
 import { Greenhouse3D } from '@/components/3d/Greenhouse3D';
 import { VirtualField3D } from '@/components/3d/VirtualField3D';
 import { PlantGrowth3D } from '@/components/3d/PlantGrowth3D';
+import { EnhancedPlantGrowth3D } from '@/components/3d/EnhancedPlantGrowth3D';
 import { ScheduleCalendar } from '@/components/dashboard/ScheduleCalendar';
 import { PlantGrowthTimeline } from '@/components/dashboard/PlantGrowthTimeline';
+import { ReportGenerator } from '@/components/dashboard/ReportGenerator';
+import { AlertNotificationPanel } from '@/components/dashboard/AlertNotificationPanel';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
+import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import {
   sensorData as staticSensorData, 
   plants, 
@@ -40,6 +44,9 @@ const Index = () => {
   
   // Real-time sensor data
   const { sensorData: realtimeSensorData, isConnected } = useRealtimeSensors();
+  
+  // Sensor alerts
+  const { alerts: sensorAlerts, unreadCount, hasPermission, requestPermission, dismissAlert, clearAlerts } = useSensorAlerts(realtimeSensorData);
 
   const historicalData = useMemo(() => generateHistoricalData(), []);
   const analyticsData = useMemo(() => generateAnalyticsData(), []);
@@ -220,6 +227,9 @@ const Index = () => {
                   {/* Plant Growth Timeline */}
                   <PlantGrowthTimeline />
                   
+                  {/* Enhanced 3D Plant Growth */}
+                  <EnhancedPlantGrowth3D />
+                  
                   {/* 3D Plant Growth Visualizations */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(['tomato', 'strawberry', 'pepper', 'carrot'] as const).map((plantType) => (
@@ -322,30 +332,45 @@ const Index = () => {
           )}
 
           {activeTab === 'analytics' && (
-            <div className="glass-card p-6">
-              <h3 className="font-semibold mb-4">Weekly Analytics</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-primary/10 rounded-lg">
-                  <p className="text-2xl font-bold text-primary">186</p>
-                  <p className="text-sm text-muted-foreground">Total Plants</p>
-                </div>
-                <div className="text-center p-4 bg-success/10 rounded-lg">
-                  <p className="text-2xl font-bold text-success">92%</p>
-                  <p className="text-sm text-muted-foreground">Health Rate</p>
-                </div>
-                <div className="text-center p-4 bg-humidity/10 rounded-lg">
-                  <p className="text-2xl font-bold text-humidity">847L</p>
-                  <p className="text-sm text-muted-foreground">Water Used</p>
-                </div>
-                <div className="text-center p-4 bg-warning/10 rounded-lg">
-                  <p className="text-2xl font-bold text-warning">124kWh</p>
-                  <p className="text-sm text-muted-foreground">Energy Used</p>
+            <div className="space-y-6">
+              <div className="glass-card p-6">
+                <h3 className="font-semibold mb-4">Weekly Analytics</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="text-center p-4 bg-primary/10 rounded-lg">
+                    <p className="text-2xl font-bold text-primary">186</p>
+                    <p className="text-sm text-muted-foreground">Total Plants</p>
+                  </div>
+                  <div className="text-center p-4 bg-success/10 rounded-lg">
+                    <p className="text-2xl font-bold text-success">92%</p>
+                    <p className="text-sm text-muted-foreground">Health Rate</p>
+                  </div>
+                  <div className="text-center p-4 bg-humidity/10 rounded-lg">
+                    <p className="text-2xl font-bold text-humidity">847L</p>
+                    <p className="text-sm text-muted-foreground">Water Used</p>
+                  </div>
+                  <div className="text-center p-4 bg-warning/10 rounded-lg">
+                    <p className="text-2xl font-bold text-warning">124kWh</p>
+                    <p className="text-sm text-muted-foreground">Energy Used</p>
+                  </div>
                 </div>
               </div>
-              <Button variant="outline" className="gap-2">
-                <Download className="w-4 h-4" />
-                Export Report
-              </Button>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ReportGenerator 
+                  plants={plants} 
+                  sensorData={staticSensorData} 
+                  schedules={schedules.map(s => ({ ...s, zone: s.zoneName, type: s.type }))}
+                  analyticsData={analyticsData}
+                />
+                <AlertNotificationPanel 
+                  alerts={sensorAlerts}
+                  unreadCount={unreadCount}
+                  hasPermission={hasPermission}
+                  onRequestPermission={requestPermission}
+                  onDismiss={dismissAlert}
+                  onClearAll={clearAlerts}
+                />
+              </div>
             </div>
           )}
         </div>
