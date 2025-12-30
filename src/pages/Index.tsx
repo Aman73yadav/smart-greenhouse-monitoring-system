@@ -359,7 +359,7 @@ const Index = () => {
                 <ReportGenerator 
                   plants={plants} 
                   sensorData={staticSensorData} 
-                  schedules={schedules.map(s => ({ ...s, zone: s.zoneName, type: s.type }))}
+                  schedules={schedules}
                   analyticsData={analyticsData}
                 />
                 <AlertNotificationPanel 

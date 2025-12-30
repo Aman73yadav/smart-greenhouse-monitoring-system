@@ -29,8 +29,9 @@ interface SensorData {
 
 interface Schedule {
   id: string;
-  name: string;
-  zone: string;
+  zoneName?: string;
+  name?: string;
+  zone?: string;
   type: string;
   startTime: string;
   endTime: string;
@@ -337,13 +338,13 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
           doc.setFillColor(isActive ? 240 : 250, isActive ? 255 : 240, isActive ? 240 : 240);
           doc.roundedRect(margin, yPosition, pageWidth - margin * 2, 15, 2, 2, 'F');
           
-          doc.setFontSize(9);
+        doc.setFontSize(9);
           doc.setFont('helvetica', 'bold');
-          doc.text(schedule.name, margin + 5, yPosition + 6);
+          doc.text(schedule.name || schedule.zoneName || 'Unnamed', margin + 5, yPosition + 6);
           
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(8);
-          doc.text(`${schedule.type} | ${schedule.zone}`, margin + 5, yPosition + 12);
+          doc.text(`${schedule.type} | ${schedule.zone || schedule.zoneName || 'All Zones'}`, margin + 5, yPosition + 12);
           
           doc.text(`${schedule.startTime} - ${schedule.endTime}`, pageWidth - margin - 50, yPosition + 9);
           
