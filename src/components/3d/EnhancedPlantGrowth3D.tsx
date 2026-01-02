@@ -101,6 +101,20 @@ const PLANT_DATA: Record<string, PlantInfo> = {
       { week: 14, name: 'Harvest', description: 'Full size fruits', color: '#4a148c' },
     ],
   },
+  carrot: {
+    name: 'Carrot',
+    scientific: 'Daucus carota',
+    growthWeeks: 12,
+    harvestInfo: 'Harvest when tops are 3/4 inch diameter',
+    stages: [
+      { week: 1, name: 'Germination', description: 'Slow germination', color: '#c8e6c9' },
+      { week: 2, name: 'Seedling', description: 'Feathery cotyledons', color: '#a5d6a7' },
+      { week: 4, name: 'Leaf Development', description: 'Ferny foliage grows', color: '#81c784' },
+      { week: 6, name: 'Root Swelling', description: 'Tap root thickens', color: '#ff9800' },
+      { week: 9, name: 'Root Growth', description: 'Carrot develops', color: '#f57c00' },
+      { week: 12, name: 'Harvest Ready', description: 'Full size root', color: '#e65100' },
+    ],
+  },
 };
 
 // 3D Lettuce Component
@@ -134,17 +148,14 @@ const Lettuce3D: React.FC<{ week: number }> = ({ week }) => {
         const height = 0.1 + layer * 0.04;
         const curl = week >= 6 ? 0.3 + layer * 0.1 : 0;
         
-        // Inner leaves curl inward more
         const leafColor = layer > 2 ? '#c8e6c9' : layer > 1 ? '#a5d6a7' : '#81c784';
         
         return (
           <group key={i} position={[0, height, 0]} rotation={[-curl, angle, 0]}>
-            {/* Leaf stem */}
             <mesh position={[size * 0.3, 0, 0]} rotation={[0, 0, -0.2]}>
               <cylinderGeometry args={[0.008, 0.012, size * 0.6, 6]} />
               <meshStandardMaterial color="#c8e6c9" />
             </mesh>
-            {/* Ruffled leaf blade */}
             <group position={[size * 0.7, 0.02, 0]}>
               <mesh scale={[2.5, 0.15, 1.8]}>
                 <dodecahedronGeometry args={[size * 0.6]} />
@@ -155,7 +166,6 @@ const Lettuce3D: React.FC<{ week: number }> = ({ week }) => {
                   side={THREE.DoubleSide}
                 />
               </mesh>
-              {/* Ruffled edges */}
               {[0, 1, 2, 3].map((r) => (
                 <mesh 
                   key={r} 
@@ -171,7 +181,6 @@ const Lettuce3D: React.FC<{ week: number }> = ({ week }) => {
         );
       })}
 
-      {/* Center heart (forms later) */}
       {week >= 5 && (
         <mesh position={[0, 0.15 + progress * 0.1, 0]}>
           <sphereGeometry args={[headSize * 0.4, 12, 12]} />
@@ -209,19 +218,16 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
 
   return (
     <group ref={groupRef}>
-      {/* Soil mound */}
       <mesh position={[0, 0.08, 0]}>
         <sphereGeometry args={[0.3, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="#3e2723" roughness={0.95} />
       </mesh>
 
-      {/* Main vine */}
       <mesh name="vine" position={[vineLength / 2, 0.15, 0]} rotation={[0, 0, -0.15]}>
         <cylinderGeometry args={[0.015, 0.025, vineLength + 0.5, 8]} />
         <meshStandardMaterial color="#558b2f" roughness={0.7} />
       </mesh>
 
-      {/* Large palmate leaves */}
       {Array.from({ length: Math.floor(3 + progress * 8) }).map((_, i) => {
         const leafPos = (i / 10) * vineLength;
         const side = i % 2 === 0 ? 1 : -1;
@@ -229,12 +235,10 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
         
         return (
           <group key={i} position={[leafPos + 0.2, 0.15, side * 0.15]} rotation={[side * 0.3, side * 0.5, 0]}>
-            {/* Petiole */}
             <mesh position={[0, 0.08, 0]} rotation={[0, 0, side * 0.3]}>
               <cylinderGeometry args={[0.008, 0.012, 0.15, 6]} />
               <meshStandardMaterial color="#7cb342" />
             </mesh>
-            {/* 5-lobed cucumber leaf */}
             <group position={[0, 0.18, 0]}>
               {[0, 1, 2, 3, 4].map((lobe) => (
                 <mesh 
@@ -256,7 +260,6 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
         );
       })}
 
-      {/* Tendrils */}
       {week >= 4 && Array.from({ length: Math.floor(progress * 6) }).map((_, i) => {
         const tendrilPos = 0.3 + (i / 6) * vineLength;
         return (
@@ -271,7 +274,6 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
         );
       })}
 
-      {/* Yellow flowers */}
       {week >= 6 && week < 10 && Array.from({ length: 4 }).map((_, i) => (
         <group 
           key={`flower-${i}`}
@@ -286,7 +288,6 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
         </group>
       ))}
 
-      {/* Cucumbers */}
       {hasFruits && Array.from({ length: Math.min(4, week - 7) }).map((_, i) => {
         const maturity = Math.min(1, (week - 8 - i * 0.5) / 3);
         const length = 0.08 + maturity * 0.15;
@@ -298,7 +299,6 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
             position={[0.35 + i * 0.25, 0.1, i % 2 === 0 ? 0.15 : -0.15]}
             rotation={[0.2, i * 0.5, 0.1]}
           >
-            {/* Cucumber body */}
             <mesh>
               <capsuleGeometry args={[width, length, 8, 16]} />
               <meshStandardMaterial 
@@ -306,7 +306,6 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
                 roughness={0.3}
               />
             </mesh>
-            {/* Bumpy texture */}
             {Array.from({ length: 8 }).map((_, b) => (
               <mesh 
                 key={b}
@@ -320,7 +319,6 @@ const Cucumber3D: React.FC<{ week: number }> = ({ week }) => {
                 <meshStandardMaterial color="#1b5e20" />
               </mesh>
             ))}
-            {/* Flower remnant */}
             <mesh position={[0, -length / 2 - 0.02, 0]}>
               <coneGeometry args={[0.008, 0.015, 5]} />
               <meshStandardMaterial color="#fdd835" />
@@ -348,19 +346,16 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
 
   return (
     <group ref={groupRef}>
-      {/* Soil */}
       <mesh position={[0, 0.06, 0]}>
         <sphereGeometry args={[0.3, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="#3e2723" roughness={0.95} />
       </mesh>
 
-      {/* Main stem - sturdy */}
       <mesh position={[0, stemHeight / 2 + 0.1, 0]}>
         <cylinderGeometry args={[0.025, 0.04, stemHeight, 10]} />
         <meshStandardMaterial color="#5d4037" roughness={0.8} />
       </mesh>
 
-      {/* Large fuzzy leaves */}
       {Array.from({ length: branchCount }).map((_, i) => {
         const angle = (i / branchCount) * Math.PI * 2;
         const height = 0.15 + (i / branchCount) * stemHeight * 0.7;
@@ -368,18 +363,15 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
         
         return (
           <group key={i} position={[0, height, 0]} rotation={[0.4, angle, 0]}>
-            {/* Petiole */}
             <mesh position={[0.1, 0, 0]} rotation={[0, 0, -0.25]}>
               <cylinderGeometry args={[0.01, 0.015, 0.18, 6]} />
               <meshStandardMaterial color="#7b5e57" />
             </mesh>
-            {/* Large oval leaf with fuzzy texture */}
             <group position={[0.25, 0.02, 0]}>
               <mesh scale={[2.5, 0.2, 1.6]}>
                 <dodecahedronGeometry args={[leafSize]} />
                 <meshStandardMaterial color="#558b2f" roughness={0.7} flatShading />
               </mesh>
-              {/* Fuzzy texture overlay */}
               {[0, 1, 2].map((f) => (
                 <mesh key={f} position={[f * 0.06 - 0.06, 0.02, 0]} scale={[1.8, 0.15, 1.2]}>
                   <icosahedronGeometry args={[leafSize * 0.4]} />
@@ -391,7 +383,6 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
         );
       })}
 
-      {/* Purple star-shaped flowers */}
       {week >= 8 && week < 12 && Array.from({ length: 3 }).map((_, i) => (
         <group 
           key={`flower-${i}`}
@@ -414,7 +405,6 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
         </group>
       ))}
 
-      {/* Eggplants */}
       {week >= 10 && Array.from({ length: Math.min(3, week - 9) }).map((_, i) => {
         const maturity = Math.min(1, (week - 10 - i * 0.7) / 4);
         const size = 0.06 + maturity * 0.08;
@@ -429,7 +419,6 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
             ]}
             rotation={[0.3, i * 0.8, 0]}
           >
-            {/* Eggplant body - teardrop shape */}
             <mesh scale={[1, 1.8, 1]}>
               <sphereGeometry args={[size, 16, 16]} />
               <meshStandardMaterial 
@@ -438,7 +427,6 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
                 metalness={0.1}
               />
             </mesh>
-            {/* Calyx (green top) */}
             <mesh position={[0, size * 1.5, 0]}>
               <coneGeometry args={[size * 0.4, 0.03, 5]} />
               <meshStandardMaterial color="#33691e" />
@@ -470,6 +458,547 @@ const Eggplant3D: React.FC<{ week: number }> = ({ week }) => {
   );
 };
 
+// 3D Strawberry Component
+const Strawberry3D: React.FC<{ week: number }> = ({ week }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const progress = Math.min(week / 16, 1);
+  
+  useFrame((state) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.2) * 0.02;
+    }
+  });
+
+  const leafCount = Math.floor(3 + progress * 9);
+  const hasRunners = week >= 8;
+  const hasFlowers = week >= 10 && week < 14;
+  const hasFruits = week >= 12;
+
+  return (
+    <group ref={groupRef}>
+      {/* Soil mound */}
+      <mesh position={[0, 0.06, 0]}>
+        <cylinderGeometry args={[0.4, 0.45, 0.12, 20]} />
+        <meshStandardMaterial color="#3e2723" roughness={0.95} />
+      </mesh>
+
+      {/* Crown base */}
+      <mesh position={[0, 0.12, 0]}>
+        <cylinderGeometry args={[0.08, 0.1, 0.08, 12]} />
+        <meshStandardMaterial color="#5d4037" roughness={0.8} />
+      </mesh>
+
+      {/* Trifoliate leaves */}
+      {Array.from({ length: leafCount }).map((_, i) => {
+        const angle = (i / leafCount) * Math.PI * 2;
+        const size = 0.1 + progress * 0.06;
+        const height = 0.15 + i * 0.02;
+        
+        return (
+          <group key={i} position={[0, height, 0]} rotation={[0.5, angle, 0]}>
+            {/* Petiole (long stem) */}
+            <mesh position={[0.12, 0.08, 0]} rotation={[0, 0, -0.4]}>
+              <cylinderGeometry args={[0.008, 0.012, 0.25, 6]} />
+              <meshStandardMaterial color="#4caf50" />
+            </mesh>
+            
+            {/* Three leaflets */}
+            {[0, 1, 2].map((leaflet) => {
+              const leafletAngle = (leaflet - 1) * 0.5;
+              return (
+                <group 
+                  key={leaflet} 
+                  position={[0.28, 0.12, leafletAngle * 0.08]}
+                  rotation={[0, leafletAngle, 0]}
+                >
+                  <mesh scale={[1.5, 0.12, 1]}>
+                    <dodecahedronGeometry args={[size * 0.5]} />
+                    <meshStandardMaterial 
+                      color="#388e3c" 
+                      roughness={0.5} 
+                      flatShading
+                      side={THREE.DoubleSide}
+                    />
+                  </mesh>
+                  {/* Serrated edges */}
+                  {[0, 1, 2, 3, 4].map((s) => (
+                    <mesh 
+                      key={s}
+                      position={[size * 0.3, 0, (s - 2) * 0.025]}
+                      scale={[0.8, 0.08, 0.5]}
+                    >
+                      <tetrahedronGeometry args={[size * 0.15]} />
+                      <meshStandardMaterial color="#2e7d32" flatShading />
+                    </mesh>
+                  ))}
+                </group>
+              );
+            })}
+          </group>
+        );
+      })}
+
+      {/* Runners (stolons) */}
+      {hasRunners && Array.from({ length: Math.min(3, Math.floor((week - 7) / 2)) }).map((_, i) => {
+        const runnerAngle = (i * 2.1) + 0.5;
+        const runnerLength = 0.3 + i * 0.15;
+        
+        return (
+          <group key={`runner-${i}`}>
+            {/* Runner stem */}
+            <mesh 
+              position={[
+                Math.cos(runnerAngle) * runnerLength / 2,
+                0.1,
+                Math.sin(runnerAngle) * runnerLength / 2
+              ]}
+              rotation={[0, runnerAngle + Math.PI / 2, 0.1]}
+            >
+              <cylinderGeometry args={[0.006, 0.008, runnerLength, 6]} />
+              <meshStandardMaterial color="#7cb342" />
+            </mesh>
+            {/* Baby plant at end */}
+            <group position={[
+              Math.cos(runnerAngle) * runnerLength,
+              0.1,
+              Math.sin(runnerAngle) * runnerLength
+            ]}>
+              {[0, 1, 2].map((leaf) => (
+                <mesh 
+                  key={leaf}
+                  position={[Math.cos(leaf * 2.1) * 0.03, 0.02, Math.sin(leaf * 2.1) * 0.03]}
+                  rotation={[0.3, leaf * 2.1, 0]}
+                  scale={[1.2, 0.1, 0.8]}
+                >
+                  <dodecahedronGeometry args={[0.025]} />
+                  <meshStandardMaterial color="#66bb6a" flatShading />
+                </mesh>
+              ))}
+            </group>
+          </group>
+        );
+      })}
+
+      {/* White flowers */}
+      {hasFlowers && Array.from({ length: Math.min(5, week - 9) }).map((_, i) => (
+        <group 
+          key={`flower-${i}`}
+          position={[
+            Math.cos(i * 1.4) * 0.15,
+            0.25 + i * 0.03,
+            Math.sin(i * 1.4) * 0.15
+          ]}
+        >
+          {/* Petals */}
+          {[0, 1, 2, 3, 4].map((p) => (
+            <mesh 
+              key={p} 
+              position={[Math.cos(p * 1.26) * 0.025, 0, Math.sin(p * 1.26) * 0.025]} 
+              rotation={[0.3, p * 1.26, 0]}
+            >
+              <coneGeometry args={[0.018, 0.03, 6]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          ))}
+          {/* Yellow center */}
+          <mesh>
+            <sphereGeometry args={[0.012, 8, 8]} />
+            <meshStandardMaterial color="#ffc107" />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Strawberry fruits */}
+      {hasFruits && Array.from({ length: Math.min(6, week - 11) }).map((_, i) => {
+        const maturity = Math.min(1, (week - 12 - i * 0.5) / 3);
+        const size = 0.025 + maturity * 0.035;
+        const fruitColor = maturity < 0.3 ? '#aed581' : maturity < 0.6 ? '#ef5350' : '#c62828';
+        
+        return (
+          <group 
+            key={`fruit-${i}`}
+            position={[
+              Math.cos(i * 1.1) * 0.2,
+              0.08,
+              Math.sin(i * 1.1) * 0.2
+            ]}
+            rotation={[0.2, i * 0.5, 0]}
+          >
+            {/* Strawberry body - cone shape */}
+            <mesh scale={[1, 1.4, 1]}>
+              <coneGeometry args={[size, size * 2.5, 8]} />
+              <meshStandardMaterial 
+                color={fruitColor}
+                roughness={0.4}
+              />
+            </mesh>
+            {/* Seeds */}
+            {maturity > 0.3 && Array.from({ length: 12 }).map((_, s) => {
+              const seedAngle = (s / 12) * Math.PI * 2;
+              const seedHeight = (s % 3) * size * 0.5 - size * 0.3;
+              return (
+                <mesh 
+                  key={s}
+                  position={[
+                    Math.cos(seedAngle) * size * 0.85,
+                    seedHeight,
+                    Math.sin(seedAngle) * size * 0.85
+                  ]}
+                >
+                  <sphereGeometry args={[0.004, 4, 4]} />
+                  <meshStandardMaterial color="#ffeb3b" />
+                </mesh>
+              );
+            })}
+            {/* Calyx (green top) */}
+            <group position={[0, size * 1.2, 0]}>
+              {[0, 1, 2, 3, 4].map((c) => (
+                <mesh 
+                  key={c}
+                  position={[Math.cos(c * 1.26) * size * 0.4, 0, Math.sin(c * 1.26) * size * 0.4]}
+                  rotation={[-0.6, c * 1.26, 0]}
+                >
+                  <coneGeometry args={[0.012, 0.025, 3]} />
+                  <meshStandardMaterial color="#2e7d32" />
+                </mesh>
+              ))}
+            </group>
+          </group>
+        );
+      })}
+
+      <Html position={[0, 0.65, 0]} center>
+        <div className="bg-background/95 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg border border-border whitespace-nowrap">
+          Week {week}: {week < 4 ? '🌱 Establishing' : week < 8 ? '🌿 Leaf Growth' : week < 10 ? '🌿 Runners' : week < 12 ? '🌸 Flowering' : '🍓 Fruiting'}
+        </div>
+      </Html>
+    </group>
+  );
+};
+
+// 3D Pepper Component
+const Pepper3D: React.FC<{ week: number }> = ({ week }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const progress = Math.min(week / 14, 1);
+  
+  useFrame((state) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.25) * 0.015;
+    }
+  });
+
+  const stemHeight = 0.25 + progress * 0.9;
+  const branchCount = Math.floor(2 + progress * 6);
+  const hasFlowers = week >= 8 && week < 12;
+  const hasFruits = week >= 10;
+
+  return (
+    <group ref={groupRef}>
+      {/* Soil */}
+      <mesh position={[0, 0.06, 0]}>
+        <cylinderGeometry args={[0.35, 0.4, 0.12, 20]} />
+        <meshStandardMaterial color="#3e2723" roughness={0.95} />
+      </mesh>
+
+      {/* Main stem */}
+      <mesh position={[0, stemHeight / 2 + 0.1, 0]}>
+        <cylinderGeometry args={[0.02, 0.035, stemHeight, 10]} />
+        <meshStandardMaterial color="#33691e" roughness={0.7} />
+      </mesh>
+
+      {/* Branches and leaves */}
+      {Array.from({ length: branchCount }).map((_, i) => {
+        const angle = (i / branchCount) * Math.PI * 2 + 0.3;
+        const height = 0.2 + (i / branchCount) * stemHeight * 0.6;
+        const branchLength = 0.1 + (1 - i / branchCount) * 0.15;
+        const leafSize = 0.08 + progress * 0.04;
+        
+        return (
+          <group key={i} position={[0, height, 0]} rotation={[0.3, angle, 0]}>
+            {/* Branch */}
+            <mesh position={[branchLength / 2, 0, 0]} rotation={[0, 0, -0.3]}>
+              <cylinderGeometry args={[0.008, 0.012, branchLength, 6]} />
+              <meshStandardMaterial color="#558b2f" />
+            </mesh>
+            
+            {/* Oval leaves */}
+            <group position={[branchLength + 0.02, 0.02, 0]}>
+              <mesh scale={[2.2, 0.12, 1.3]} rotation={[0, 0.2, 0]}>
+                <dodecahedronGeometry args={[leafSize]} />
+                <meshStandardMaterial 
+                  color="#4caf50" 
+                  roughness={0.5} 
+                  flatShading
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+              {/* Leaf vein */}
+              <mesh position={[0, 0.005, 0]} scale={[1.5, 0.03, 0.1]}>
+                <boxGeometry args={[leafSize * 1.5, 0.01, 0.01]} />
+                <meshStandardMaterial color="#81c784" />
+              </mesh>
+            </group>
+          </group>
+        );
+      })}
+
+      {/* White flowers */}
+      {hasFlowers && Array.from({ length: Math.min(6, week - 7) }).map((_, i) => (
+        <group 
+          key={`flower-${i}`}
+          position={[
+            Math.cos(i * 1.2) * 0.12,
+            stemHeight * (0.5 + i * 0.06),
+            Math.sin(i * 1.2) * 0.12
+          ]}
+        >
+          {[0, 1, 2, 3, 4, 5].map((p) => (
+            <mesh 
+              key={p} 
+              position={[Math.cos(p * 1.05) * 0.015, 0, Math.sin(p * 1.05) * 0.015]} 
+              rotation={[0.4, p * 1.05, 0]}
+            >
+              <coneGeometry args={[0.012, 0.02, 5]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          ))}
+          <mesh>
+            <sphereGeometry args={[0.008, 6, 6]} />
+            <meshStandardMaterial color="#ffeb3b" />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Bell peppers */}
+      {hasFruits && Array.from({ length: Math.min(4, week - 9) }).map((_, i) => {
+        const maturity = Math.min(1, (week - 10 - i * 0.7) / 4);
+        const size = 0.04 + maturity * 0.05;
+        // Color progression: green -> yellow -> red
+        const fruitColor = maturity < 0.3 ? '#388e3c' : maturity < 0.6 ? '#fbc02d' : maturity < 0.8 ? '#ff9800' : '#e53935';
+        
+        return (
+          <group 
+            key={`pepper-${i}`}
+            position={[
+              Math.cos(i * 1.8 + 0.5) * 0.15,
+              stemHeight * (0.4 + i * 0.08),
+              Math.sin(i * 1.8 + 0.5) * 0.15
+            ]}
+            rotation={[0.15, i * 0.6, 0]}
+          >
+            {/* Bell pepper body - blocky shape */}
+            <mesh scale={[1, 1.2, 1]}>
+              <sphereGeometry args={[size, 8, 8]} />
+              <meshStandardMaterial 
+                color={fruitColor}
+                roughness={0.25}
+                metalness={0.05}
+              />
+            </mesh>
+            {/* Lobes at bottom */}
+            {[0, 1, 2, 3].map((lobe) => (
+              <mesh 
+                key={lobe}
+                position={[
+                  Math.cos(lobe * 1.57) * size * 0.4,
+                  -size * 0.8,
+                  Math.sin(lobe * 1.57) * size * 0.4
+                ]}
+              >
+                <sphereGeometry args={[size * 0.35, 6, 6]} />
+                <meshStandardMaterial color={fruitColor} roughness={0.25} />
+              </mesh>
+            ))}
+            {/* Stem */}
+            <mesh position={[0, size * 1.1, 0]}>
+              <cylinderGeometry args={[0.008, 0.012, 0.04, 6]} />
+              <meshStandardMaterial color="#33691e" />
+            </mesh>
+            {/* Calyx */}
+            <mesh position={[0, size * 0.95, 0]}>
+              <cylinderGeometry args={[size * 0.35, size * 0.25, 0.02, 6]} />
+              <meshStandardMaterial color="#2e7d32" />
+            </mesh>
+          </group>
+        );
+      })}
+
+      <Html position={[0, stemHeight + 0.4, 0]} center>
+        <div className="bg-background/95 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg border border-border whitespace-nowrap">
+          Week {week}: {week < 3 ? '🌱 Germination' : week < 6 ? '🌿 Seedling' : week < 8 ? '🌿 Vegetative' : week < 10 ? '🌸 Flowering' : '🫑 Fruiting'}
+        </div>
+      </Html>
+    </group>
+  );
+};
+
+// 3D Carrot Component
+const Carrot3D: React.FC<{ week: number }> = ({ week }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const progress = Math.min(week / 12, 1);
+  
+  useFrame((state) => {
+    if (groupRef.current) {
+      // Gentle sway in the breeze
+      groupRef.current.children.forEach((child, i) => {
+        if (child.name === 'foliage') {
+          child.rotation.x = Math.sin(state.clock.elapsedTime * 1.5 + i * 0.5) * 0.03;
+        }
+      });
+    }
+  });
+
+  const foliageHeight = 0.1 + progress * 0.4;
+  const foliageCount = Math.floor(3 + progress * 12);
+  const carrotVisible = week >= 6;
+  const carrotSize = carrotVisible ? Math.min(1, (week - 5) / 7) : 0;
+
+  return (
+    <group ref={groupRef}>
+      {/* Soil with raised bed look */}
+      <mesh position={[0, 0.08, 0]}>
+        <cylinderGeometry args={[0.35, 0.4, 0.16, 20]} />
+        <meshStandardMaterial color="#3e2723" roughness={0.95} />
+      </mesh>
+
+      {/* Soil mound around carrot top */}
+      <mesh position={[0, 0.12, 0]}>
+        <sphereGeometry args={[0.15, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color="#4e342e" roughness={0.9} />
+      </mesh>
+
+      {/* Feathery foliage (fern-like leaves) */}
+      {Array.from({ length: foliageCount }).map((_, i) => {
+        const angle = (i / foliageCount) * Math.PI * 2;
+        const tilt = 0.3 + Math.random() * 0.3;
+        const height = foliageHeight * (0.7 + Math.random() * 0.3);
+        
+        return (
+          <group 
+            key={i} 
+            name="foliage"
+            position={[0, 0.12, 0]} 
+            rotation={[tilt, angle, 0]}
+          >
+            {/* Main stem */}
+            <mesh position={[0, height / 2, 0]}>
+              <cylinderGeometry args={[0.004, 0.008, height, 6]} />
+              <meshStandardMaterial color="#66bb6a" />
+            </mesh>
+            
+            {/* Feathery fronds along stem */}
+            {Array.from({ length: Math.floor(4 + progress * 6) }).map((_, f) => {
+              const frondHeight = (f / 10) * height;
+              const frondSize = 0.02 + (1 - f / 10) * 0.03;
+              const side = f % 2 === 0 ? 1 : -1;
+              
+              return (
+                <group 
+                  key={f}
+                  position={[side * 0.01, frondHeight, 0]}
+                  rotation={[0, 0, side * 0.6]}
+                >
+                  {/* Frond segment */}
+                  <mesh position={[side * frondSize / 2, 0, 0]} scale={[3, 0.15, 1]}>
+                    <dodecahedronGeometry args={[frondSize * 0.4]} />
+                    <meshStandardMaterial 
+                      color="#81c784" 
+                      roughness={0.5} 
+                      flatShading 
+                      side={THREE.DoubleSide}
+                    />
+                  </mesh>
+                </group>
+              );
+            })}
+          </group>
+        );
+      })}
+
+      {/* Carrot root (partially visible above soil) */}
+      {carrotVisible && (
+        <group position={[0, 0.1, 0]}>
+          {/* Carrot crown (visible part) */}
+          <mesh position={[0, 0.02, 0]}>
+            <cylinderGeometry args={[0.03 + carrotSize * 0.02, 0.025 + carrotSize * 0.015, 0.04, 12]} />
+            <meshStandardMaterial color="#e65100" roughness={0.6} />
+          </mesh>
+          
+          {/* Root shoulder rings */}
+          {Array.from({ length: 3 }).map((_, r) => (
+            <mesh 
+              key={r} 
+              position={[0, 0.015 - r * 0.008, 0]}
+            >
+              <torusGeometry args={[0.028 + carrotSize * 0.018 - r * 0.003, 0.003, 6, 16]} />
+              <meshStandardMaterial color="#bf360c" />
+            </mesh>
+          ))}
+        </group>
+      )}
+
+      {/* Underground carrot (shown as semi-transparent for visualization) */}
+      {carrotVisible && (
+        <group position={[0, -0.05, 0]}>
+          {/* Main carrot body */}
+          <mesh position={[0, -carrotSize * 0.12, 0]} rotation={[0, 0, Math.PI]}>
+            <coneGeometry args={[0.035 + carrotSize * 0.025, 0.15 + carrotSize * 0.2, 12]} />
+            <meshStandardMaterial 
+              color="#ff6d00" 
+              roughness={0.5}
+              transparent
+              opacity={0.7}
+            />
+          </mesh>
+          
+          {/* Carrot tip */}
+          <mesh position={[0, -0.2 - carrotSize * 0.15, 0]} rotation={[0, 0, Math.PI]}>
+            <coneGeometry args={[0.01 + carrotSize * 0.005, 0.04 + carrotSize * 0.03, 8]} />
+            <meshStandardMaterial 
+              color="#e65100" 
+              roughness={0.5}
+              transparent
+              opacity={0.7}
+            />
+          </mesh>
+
+          {/* Root hairs */}
+          {Array.from({ length: 8 }).map((_, h) => {
+            const hairAngle = (h / 8) * Math.PI * 2;
+            const hairY = -0.08 - (h % 3) * 0.05;
+            return (
+              <mesh 
+                key={h}
+                position={[
+                  Math.cos(hairAngle) * (0.03 + carrotSize * 0.02),
+                  hairY,
+                  Math.sin(hairAngle) * (0.03 + carrotSize * 0.02)
+                ]}
+                rotation={[0.5, hairAngle, 0.3]}
+              >
+                <cylinderGeometry args={[0.002, 0.001, 0.03 + Math.random() * 0.02, 4]} />
+                <meshStandardMaterial color="#ffab40" transparent opacity={0.6} />
+              </mesh>
+            );
+          })}
+        </group>
+      )}
+
+      {/* Ground cross-section indicator */}
+      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.32, 0.35, 32]} />
+        <meshStandardMaterial color="#5d4037" transparent opacity={0.3} />
+      </mesh>
+
+      <Html position={[0, foliageHeight + 0.3, 0]} center>
+        <div className="bg-background/95 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg border border-border whitespace-nowrap">
+          Week {week}: {week < 2 ? '🌱 Germination' : week < 4 ? '🌿 Seedling' : week < 6 ? '🌿 Foliage' : week < 9 ? '🥕 Root Growing' : '✅ Harvest Ready'}
+        </div>
+      </Html>
+    </group>
+  );
+};
+
 // Plant Selection Scene
 const PlantScene: React.FC<{ plantType: string; week: number }> = ({ plantType, week }) => {
   const PlantComponent = useMemo(() => {
@@ -477,6 +1006,9 @@ const PlantScene: React.FC<{ plantType: string; week: number }> = ({ plantType, 
       case 'lettuce': return <Lettuce3D week={week} />;
       case 'cucumber': return <Cucumber3D week={week} />;
       case 'eggplant': return <Eggplant3D week={week} />;
+      case 'strawberry': return <Strawberry3D week={week} />;
+      case 'pepper': return <Pepper3D week={week} />;
+      case 'carrot': return <Carrot3D week={week} />;
       default: return <Lettuce3D week={week} />;
     }
   }, [plantType, week]);
@@ -542,7 +1074,7 @@ export const EnhancedPlantGrowth3D: React.FC = () => {
               Enhanced 3D Plant Growth Visualization
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Interactive weekly growth progression for vegetables
+              Interactive weekly growth progression for 7 vegetables
             </p>
           </div>
           <Select value={selectedPlant} onValueChange={setSelectedPlant}>

@@ -11,10 +11,12 @@ import { Greenhouse3D } from '@/components/3d/Greenhouse3D';
 import { VirtualField3D } from '@/components/3d/VirtualField3D';
 import { PlantGrowth3D } from '@/components/3d/PlantGrowth3D';
 import { EnhancedPlantGrowth3D } from '@/components/3d/EnhancedPlantGrowth3D';
+import { GreenhouseGrowthSimulation } from '@/components/3d/GreenhouseGrowthSimulation';
 import { ScheduleCalendar } from '@/components/dashboard/ScheduleCalendar';
 import { PlantGrowthTimeline } from '@/components/dashboard/PlantGrowthTimeline';
 import { ReportGenerator } from '@/components/dashboard/ReportGenerator';
 import { AlertNotificationPanel } from '@/components/dashboard/AlertNotificationPanel';
+import { PlantHealthDiagnosis } from '@/components/dashboard/PlantHealthDiagnosis';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import {
@@ -224,11 +226,17 @@ const Index = () => {
                 </TabsContent>
 
                 <TabsContent value="growth" className="space-y-6">
+                  {/* Greenhouse Growth Simulation */}
+                  <GreenhouseGrowthSimulation />
+                  
                   {/* Plant Growth Timeline */}
                   <PlantGrowthTimeline />
                   
                   {/* Enhanced 3D Plant Growth */}
                   <EnhancedPlantGrowth3D />
+                  
+                  {/* AI Plant Health Diagnosis */}
+                  <PlantHealthDiagnosis />
                   
                   {/* 3D Plant Growth Visualizations */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
