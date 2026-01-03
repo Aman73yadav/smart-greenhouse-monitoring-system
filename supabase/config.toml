@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.plant-advisor]
 verify_jwt = false
+
+[functions.plant-health-diagnosis]
+verify_jwt = false
+
+[functions.send-alert-email]
+verify_jwt = false
+
+[functions.yield-prediction]
+verify_jwt = false
