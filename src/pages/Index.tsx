@@ -17,8 +17,11 @@ import { PlantGrowthTimeline } from '@/components/dashboard/PlantGrowthTimeline'
 import { ReportGenerator } from '@/components/dashboard/ReportGenerator';
 import { AlertNotificationPanel } from '@/components/dashboard/AlertNotificationPanel';
 import { PlantHealthDiagnosis } from '@/components/dashboard/PlantHealthDiagnosis';
+import { YieldPrediction } from '@/components/dashboard/YieldPrediction';
+import { EmailAlertSettings } from '@/components/dashboard/EmailAlertSettings';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
+import { useEmailAlerts } from '@/hooks/useEmailAlerts';
 import {
   sensorData as staticSensorData, 
   plants, 
@@ -49,9 +52,23 @@ const Index = () => {
   
   // Sensor alerts
   const { alerts: sensorAlerts, unreadCount, hasPermission, requestPermission, dismissAlert, clearAlerts } = useSensorAlerts(realtimeSensorData);
+  
+  // Email alerts
+  const { emailEnabled, emailAddress, updateEmailSettings } = useEmailAlerts();
 
   const historicalData = useMemo(() => generateHistoricalData(), []);
   const analyticsData = useMemo(() => generateAnalyticsData(), []);
+  
+  // Plant data for yield prediction
+  const plantDataForPrediction = useMemo(() => 
+    plants.map(p => ({
+      name: p.name,
+      species: p.type,
+      plantedDate: p.plantedDate.toISOString().split('T')[0],
+      currentGrowthStage: typeof p.growthStage === 'number' ? p.growthStage : p.growthProgress / 10,
+      healthStatus: p.health,
+      zone: p.zone,
+    })), []);
 
   const handleControlToggle = (id: string, isActive: boolean) => {
     setControls(prev => prev.map(c => c.id === id ? { ...c, isActive } : c));
@@ -363,6 +380,17 @@ const Index = () => {
                 </div>
               </div>
               
+              {/* Yield Prediction */}
+              <YieldPrediction 
+                plants={plantDataForPrediction}
+                sensorData={{
+                  temperature: avgTemp,
+                  humidity: avgHumidity,
+                  moisture: avgMoisture,
+                  light: realtimeSensorData.light,
+                }}
+              />
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <ReportGenerator 
                   plants={plants} 
@@ -370,14 +398,21 @@ const Index = () => {
                   schedules={schedules}
                   analyticsData={analyticsData}
                 />
-                <AlertNotificationPanel 
-                  alerts={sensorAlerts}
-                  unreadCount={unreadCount}
-                  hasPermission={hasPermission}
-                  onRequestPermission={requestPermission}
-                  onDismiss={dismissAlert}
-                  onClearAll={clearAlerts}
-                />
+                <div className="space-y-6">
+                  <EmailAlertSettings
+                    emailEnabled={emailEnabled}
+                    emailAddress={emailAddress}
+                    onUpdateSettings={updateEmailSettings}
+                  />
+                  <AlertNotificationPanel 
+                    alerts={sensorAlerts}
+                    unreadCount={unreadCount}
+                    hasPermission={hasPermission}
+                    onRequestPermission={requestPermission}
+                    onDismiss={dismissAlert}
+                    onClearAll={clearAlerts}
+                  />
+                </div>
               </div>
             </div>
           )}
