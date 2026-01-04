@@ -22,6 +22,8 @@ import { YieldHistory } from '@/components/dashboard/YieldHistory';
 import { EmailAlertSettings } from '@/components/dashboard/EmailAlertSettings';
 import { PlantCareChecklist } from '@/components/dashboard/PlantCareChecklist';
 import { WeatherWidget } from '@/components/dashboard/WeatherWidget';
+import { SmartIrrigation } from '@/components/dashboard/SmartIrrigation';
+import { PlantDiseaseEncyclopedia } from '@/components/dashboard/PlantDiseaseEncyclopedia';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { useEmailAlerts } from '@/hooks/useEmailAlerts';
@@ -294,10 +296,16 @@ const Index = () => {
           )}
 
           {activeTab === 'plants' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {plants.map(plant => (
-                <PlantCard key={plant.id} plant={plant} />
-              ))}
+            <div className="space-y-6">
+              {/* Plant Disease Encyclopedia */}
+              <PlantDiseaseEncyclopedia />
+              
+              {/* Plants Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {plants.map(plant => (
+                  <PlantCard key={plant.id} plant={plant} />
+                ))}
+              </div>
             </div>
           )}
 
@@ -322,10 +330,16 @@ const Index = () => {
           )}
 
           {activeTab === 'controls' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {controls.map(control => (
-                <ControlCard key={control.id} control={control} onToggle={handleControlToggle} onValueChange={handleControlValueChange} />
-              ))}
+            <div className="space-y-6">
+              {/* Smart Irrigation */}
+              <SmartIrrigation />
+              
+              {/* Manual Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {controls.map(control => (
+                  <ControlCard key={control.id} control={control} onToggle={handleControlToggle} onValueChange={handleControlValueChange} />
+                ))}
+              </div>
             </div>
           )}
 

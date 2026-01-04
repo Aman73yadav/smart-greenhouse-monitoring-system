@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.weather-forecast]
 verify_jwt = false
+
+[functions.plant-disease-identify]
+verify_jwt = false
