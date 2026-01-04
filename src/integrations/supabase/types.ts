@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      care_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          frequency: string
+          id: string
+          is_completed: boolean
+          task_type: string
+          title: string
+          user_id: string
+          zone: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          frequency?: string
+          id?: string
+          is_completed?: boolean
+          task_type: string
+          title: string
+          user_id: string
+          zone: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          frequency?: string
+          id?: string
+          is_completed?: boolean
+          task_type?: string
+          title?: string
+          user_id?: string
+          zone?: string
+        }
+        Relationships: []
+      }
       control_settings: {
         Row: {
           heating_enabled: boolean | null
@@ -236,6 +278,45 @@ export type Database = {
           soil_moisture?: number | null
           temperature?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      yield_records: {
+        Row: {
+          actual_harvest_date: string | null
+          actual_yield: number | null
+          created_at: string
+          id: string
+          notes: string | null
+          plant_type: string
+          predicted_harvest_date: string | null
+          predicted_yield: number | null
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          actual_harvest_date?: string | null
+          actual_yield?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          plant_type: string
+          predicted_harvest_date?: string | null
+          predicted_yield?: number | null
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          actual_harvest_date?: string | null
+          actual_yield?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          plant_type?: string
+          predicted_harvest_date?: string | null
+          predicted_yield?: number | null
+          user_id?: string
+          zone?: string | null
         }
         Relationships: []
       }

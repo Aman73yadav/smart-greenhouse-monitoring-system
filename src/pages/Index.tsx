@@ -18,7 +18,10 @@ import { ReportGenerator } from '@/components/dashboard/ReportGenerator';
 import { AlertNotificationPanel } from '@/components/dashboard/AlertNotificationPanel';
 import { PlantHealthDiagnosis } from '@/components/dashboard/PlantHealthDiagnosis';
 import { YieldPrediction } from '@/components/dashboard/YieldPrediction';
+import { YieldHistory } from '@/components/dashboard/YieldHistory';
 import { EmailAlertSettings } from '@/components/dashboard/EmailAlertSettings';
+import { PlantCareChecklist } from '@/components/dashboard/PlantCareChecklist';
+import { WeatherWidget } from '@/components/dashboard/WeatherWidget';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { useEmailAlerts } from '@/hooks/useEmailAlerts';
@@ -206,6 +209,12 @@ const Index = () => {
                   ))}
                 </div>
               </div>
+              
+              {/* Weather & Care Checklist */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <WeatherWidget />
+                <PlantCareChecklist />
+              </div>
             </>
           )}
 
@@ -380,16 +389,19 @@ const Index = () => {
                 </div>
               </div>
               
-              {/* Yield Prediction */}
-              <YieldPrediction 
-                plants={plantDataForPrediction}
-                sensorData={{
-                  temperature: avgTemp,
-                  humidity: avgHumidity,
-                  moisture: avgMoisture,
-                  light: realtimeSensorData.light,
-                }}
-              />
+              {/* Yield Prediction & History */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <YieldPrediction 
+                  plants={plantDataForPrediction}
+                  sensorData={{
+                    temperature: avgTemp,
+                    humidity: avgHumidity,
+                    moisture: avgMoisture,
+                    light: realtimeSensorData.light,
+                  }}
+                />
+                <YieldHistory />
+              </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <ReportGenerator 

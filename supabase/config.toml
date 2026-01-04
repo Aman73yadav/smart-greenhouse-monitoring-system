@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.yield-prediction]
 verify_jwt = false
+
+[functions.weather-forecast]
+verify_jwt = false
