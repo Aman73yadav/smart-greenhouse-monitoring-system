@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Mic, MicOff, X, ChevronUp } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Mic, MicOff, X, ChevronUp, Radio } from 'lucide-react';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { cn } from '@/lib/utils';
 
@@ -21,10 +23,11 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
   
   const {
     isListening,
+    isContinuousMode,
     isSupported,
     transcript,
     toggleListening,
-    availableCommands,
+    toggleContinuousMode,
   } = useVoiceControl({ onToggleControl, onSetValue, onNavigate });
 
   if (!isSupported) {
@@ -37,6 +40,14 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
       {transcript && isListening && (
         <div className="bg-popover text-popover-foreground border rounded-lg px-3 py-2 shadow-lg max-w-xs animate-in fade-in slide-in-from-bottom-2">
           <p className="text-sm font-medium">"{transcript}"</p>
+        </div>
+      )}
+
+      {/* Continuous mode indicator */}
+      {isContinuousMode && (
+        <div className="bg-primary text-primary-foreground rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1.5 shadow-lg animate-in fade-in slide-in-from-right-2">
+          <Radio className="h-3 w-3 animate-pulse" />
+          Continuous Mode
         </div>
       )}
 
@@ -66,7 +77,25 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
                 <X className="h-3 w-3" />
               </Button>
             </div>
-            <ScrollArea className="h-48">
+            
+            {/* Continuous Mode Toggle */}
+            <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
+              <div className="space-y-0.5">
+                <Label htmlFor="continuous-mode" className="text-xs font-medium">
+                  Continuous Listening
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Stay active for multiple commands
+                </p>
+              </div>
+              <Switch
+                id="continuous-mode"
+                checked={isContinuousMode}
+                onCheckedChange={toggleContinuousMode}
+              />
+            </div>
+            
+            <ScrollArea className="h-40">
               <div className="space-y-3 pr-3">
                 <div>
                   <p className="text-xs font-medium text-primary mb-1">Navigation</p>
@@ -88,6 +117,12 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
                   <p className="text-xs font-medium text-primary mb-1">Values</p>
                   <p className="text-xs text-muted-foreground">"set temperature to 25"</p>
                 </div>
+                {isContinuousMode && (
+                  <div>
+                    <p className="text-xs font-medium text-destructive mb-1">Stop Listening</p>
+                    <p className="text-xs text-muted-foreground">"stop listening"</p>
+                  </div>
+                )}
               </div>
             </ScrollArea>
           </div>
@@ -97,10 +132,11 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
       {/* Main mic button */}
       <Button
         size="lg"
-        variant={isListening ? "destructive" : "default"}
+        variant={isListening ? (isContinuousMode ? "default" : "destructive") : "default"}
         className={cn(
           "h-14 w-14 rounded-full shadow-xl transition-all duration-300",
-          isListening && "animate-pulse shadow-primary/50 shadow-2xl scale-110"
+          isListening && !isContinuousMode && "animate-pulse shadow-destructive/50 shadow-2xl scale-110",
+          isContinuousMode && "bg-primary shadow-primary/50 shadow-2xl ring-4 ring-primary/30"
         )}
         onClick={toggleListening}
       >
@@ -114,8 +150,14 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
       {/* Listening indicator */}
       {isListening && (
         <div className="absolute -top-1 -right-1 h-4 w-4">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
-          <span className="relative inline-flex h-4 w-4 rounded-full bg-destructive" />
+          <span className={cn(
+            "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+            isContinuousMode ? "bg-primary" : "bg-destructive"
+          )} />
+          <span className={cn(
+            "relative inline-flex h-4 w-4 rounded-full",
+            isContinuousMode ? "bg-primary" : "bg-destructive"
+          )} />
         </div>
       )}
     </div>
