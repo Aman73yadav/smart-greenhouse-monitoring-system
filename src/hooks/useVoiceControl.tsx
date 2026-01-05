@@ -50,9 +50,11 @@ interface UseVoiceControlProps {
 
 export const useVoiceControl = ({ onToggleControl, onSetValue, onNavigate }: UseVoiceControlProps) => {
   const [isListening, setIsListening] = useState(false);
+  const [isContinuousMode, setIsContinuousMode] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const shouldRestartRef = useRef(false);
 
   // Check browser support
   useEffect(() => {
@@ -166,49 +168,134 @@ export const useVoiceControl = ({ onToggleControl, onSetValue, onNavigate }: Use
     toast.error(`Command not recognized: "${text}"`);
   }, [commands, onSetValue]);
 
-  const startListening = useCallback(() => {
+  const startListening = useCallback((continuous: boolean = false) => {
     if (!isSupported) {
       toast.error('Voice recognition is not supported in your browser');
       return;
     }
 
+    shouldRestartRef.current = continuous;
+    setIsContinuousMode(continuous);
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
     
-    recognitionRef.current.continuous = false;
+    // Use continuous mode for better experience
+    recognitionRef.current.continuous = continuous;
     recognitionRef.current.interimResults = false;
     recognitionRef.current.lang = 'en-US';
 
     recognitionRef.current.onstart = () => {
       setIsListening(true);
-      toast.info('Listening for voice commands...');
+      if (continuous) {
+        toast.info('Continuous listening mode active. Say "stop listening" to disable.');
+      } else {
+        toast.info('Listening for voice command...');
+      }
     };
 
     recognitionRef.current.onresult = (event) => {
-      const result = event.results[0][0].transcript;
+      // Get the latest result
+      const lastResultIndex = event.results.length - 1;
+      const result = event.results[lastResultIndex][0].transcript;
+      
+      // Check for stop command in continuous mode
+      if (shouldRestartRef.current && result.toLowerCase().includes('stop listening')) {
+        toast.success('Continuous listening disabled');
+        shouldRestartRef.current = false;
+        setIsContinuousMode(false);
+        recognitionRef.current?.stop();
+        return;
+      }
+      
       processCommand(result);
     };
 
     recognitionRef.current.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
-      setIsListening(false);
+      
       if (event.error === 'no-speech') {
+        // In continuous mode, restart on no-speech
+        if (shouldRestartRef.current) {
+          return; // Don't show error, just continue
+        }
         toast.error('No speech detected. Please try again.');
       } else if (event.error === 'not-allowed') {
         toast.error('Microphone access denied. Please enable microphone permissions.');
-      } else {
+        shouldRestartRef.current = false;
+        setIsContinuousMode(false);
+      } else if (event.error !== 'aborted') {
         toast.error(`Voice recognition error: ${event.error}`);
+      }
+      
+      if (!shouldRestartRef.current) {
+        setIsListening(false);
       }
     };
 
     recognitionRef.current.onend = () => {
-      setIsListening(false);
+      // Restart if in continuous mode
+      if (shouldRestartRef.current && isSupported) {
+        try {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          recognitionRef.current = new SpeechRecognition();
+          recognitionRef.current.continuous = true;
+          recognitionRef.current.interimResults = false;
+          recognitionRef.current.lang = 'en-US';
+          
+          recognitionRef.current.onresult = (event) => {
+            const lastResultIndex = event.results.length - 1;
+            const result = event.results[lastResultIndex][0].transcript;
+            
+            if (shouldRestartRef.current && result.toLowerCase().includes('stop listening')) {
+              toast.success('Continuous listening disabled');
+              shouldRestartRef.current = false;
+              setIsContinuousMode(false);
+              recognitionRef.current?.stop();
+              return;
+            }
+            
+            processCommand(result);
+          };
+          
+          recognitionRef.current.onerror = (event) => {
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+              shouldRestartRef.current = false;
+              setIsContinuousMode(false);
+              setIsListening(false);
+            }
+          };
+          
+          recognitionRef.current.onend = () => {
+            if (shouldRestartRef.current) {
+              setTimeout(() => {
+                if (shouldRestartRef.current) {
+                  recognitionRef.current?.start();
+                }
+              }, 100);
+            } else {
+              setIsListening(false);
+            }
+          };
+          
+          recognitionRef.current.start();
+        } catch (e) {
+          console.error('Failed to restart recognition:', e);
+          shouldRestartRef.current = false;
+          setIsContinuousMode(false);
+          setIsListening(false);
+        }
+      } else {
+        setIsListening(false);
+      }
     };
 
     recognitionRef.current.start();
   }, [isSupported, processCommand]);
 
   const stopListening = useCallback(() => {
+    shouldRestartRef.current = false;
+    setIsContinuousMode(false);
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
@@ -219,17 +306,27 @@ export const useVoiceControl = ({ onToggleControl, onSetValue, onNavigate }: Use
     if (isListening) {
       stopListening();
     } else {
-      startListening();
+      startListening(false);
     }
   }, [isListening, startListening, stopListening]);
 
+  const toggleContinuousMode = useCallback(() => {
+    if (isContinuousMode) {
+      stopListening();
+    } else {
+      startListening(true);
+    }
+  }, [isContinuousMode, startListening, stopListening]);
+
   return {
     isListening,
+    isContinuousMode,
     isSupported,
     transcript,
     startListening,
     stopListening,
     toggleListening,
+    toggleContinuousMode,
     availableCommands: commands.map(c => ({ command: c.command, description: c.description })),
   };
 };
