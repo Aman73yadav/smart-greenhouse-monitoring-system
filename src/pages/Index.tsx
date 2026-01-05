@@ -25,6 +25,7 @@ import { WeatherWidget } from '@/components/dashboard/WeatherWidget';
 import { SmartIrrigation } from '@/components/dashboard/SmartIrrigation';
 import { PlantDiseaseEncyclopedia } from '@/components/dashboard/PlantDiseaseEncyclopedia';
 import { VoiceControl } from '@/components/dashboard/VoiceControl';
+import { FloatingVoiceButton } from '@/components/dashboard/FloatingVoiceButton';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { useEmailAlerts } from '@/hooks/useEmailAlerts';
@@ -154,6 +155,13 @@ const Index = () => {
       
       <main className="flex-1 lg:ml-0 overflow-hidden">
         <Header title={getPageTitle()} />
+        
+        {/* Floating Voice Control Button */}
+        <FloatingVoiceButton
+          onToggleControl={handleVoiceControlToggle}
+          onSetValue={handleVoiceSetValue}
+          onNavigate={setActiveTab}
+        />
         
         <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-80px)]">
           {activeTab === 'dashboard' && (
