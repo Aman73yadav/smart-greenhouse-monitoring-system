@@ -24,6 +24,7 @@ import { PlantCareChecklist } from '@/components/dashboard/PlantCareChecklist';
 import { WeatherWidget } from '@/components/dashboard/WeatherWidget';
 import { SmartIrrigation } from '@/components/dashboard/SmartIrrigation';
 import { PlantDiseaseEncyclopedia } from '@/components/dashboard/PlantDiseaseEncyclopedia';
+import { VoiceControl } from '@/components/dashboard/VoiceControl';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { useEmailAlerts } from '@/hooks/useEmailAlerts';
@@ -81,6 +82,15 @@ const Index = () => {
 
   const handleControlValueChange = (id: string, value: number) => {
     setControls(prev => prev.map(c => c.id === id ? { ...c, targetValue: value } : c));
+  };
+
+  // Voice control handlers
+  const handleVoiceControlToggle = (controlType: string, isActive: boolean) => {
+    setControls(prev => prev.map(c => c.type === controlType ? { ...c, isActive } : c));
+  };
+
+  const handleVoiceSetValue = (controlType: string, value: number) => {
+    setControls(prev => prev.map(c => c.type === controlType ? { ...c, targetValue: value } : c));
   };
 
   const handleAlertDismiss = (id: string) => {
@@ -331,6 +341,13 @@ const Index = () => {
 
           {activeTab === 'controls' && (
             <div className="space-y-6">
+              {/* Voice Control */}
+              <VoiceControl
+                onToggleControl={handleVoiceControlToggle}
+                onSetValue={handleVoiceSetValue}
+                onNavigate={setActiveTab}
+              />
+              
               {/* Smart Irrigation */}
               <SmartIrrigation />
               
