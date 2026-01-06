@@ -6,6 +6,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Mic, MicOff, X, ChevronUp, Radio, Volume2, VolumeX, Ear } from 'lucide-react';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
+import { useAudioVisualizer } from '@/hooks/useAudioVisualizer';
+import { AudioWaveform } from './AudioWaveform';
 import { cn } from '@/lib/utils';
 
 interface FloatingVoiceButtonProps {
@@ -35,6 +37,9 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
     toggleWakeWordMode,
     toggleTts,
   } = useVoiceControl({ onToggleControl, onSetValue, onNavigate });
+
+  const isVisualizerActive = isListening || isAwake;
+  const { levels } = useAudioVisualizer(isVisualizerActive, 5);
 
   if (!isSupported) {
     return null;
@@ -181,6 +186,16 @@ export const FloatingVoiceButton: React.FC<FloatingVoiceButtonProps> = ({
           </div>
         </PopoverContent>
       </Popover>
+
+      {/* Audio waveform visualization */}
+      {isVisualizerActive && (
+        <div className="bg-popover/95 backdrop-blur-sm border rounded-full px-3 py-2 shadow-lg animate-in fade-in slide-in-from-bottom-2">
+          <AudioWaveform 
+            levels={levels} 
+            isActive={isVisualizerActive} 
+          />
+        </div>
+      )}
 
       {/* Main mic button */}
       <Button
