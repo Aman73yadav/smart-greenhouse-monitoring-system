@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+Website Link : https://smart-greenhouse-monitoring-system.vercel.app/
+# Smart Greenhouse Monitoring System 🌿
 
-## Project info
+## Overview
+The Smart Greenhouse Monitoring System is an AI-powered web application designed to help greenhouse managers monitor and optimize their growing environments. The system provides intelligent insights and real-time monitoring capabilities to enhance plant health and operational efficiency.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Live Demo
+🌐 **Live Application**: https://smart-greenhouse-monitoring-system.vercel.app/
 
-## How can I edit this code?
+## Features
+- **AI-Powered Insights**: Get intelligent recommendations for greenhouse management
+- **User Authentication**: Secure login system with email/password authentication
+- **Real-time Monitoring**: Track greenhouse conditions and parameters
+- **Responsive Design**: Accessible on various devices
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Internet connection
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Installation
+Since this is a web application, there's no installation required. Simply visit the URL above to start using the system.
 
-Changes made via Lovable will be committed automatically to this repo.
+### Login Credentials
+To access the system:
+1. Visit the application URL
+2. Click "Login" or "Sign Up" to create an account
+3. Enter your email and password
+4. Start monitoring your greenhouse!
 
-**Use your preferred IDE**
+## Technology Stack
+- **Frontend**: React.js (likely, based on deployment on Vercel)
+- **Deployment**: Vercel platform
+- **Authentication**: Email/password-based system
+- **AI Integration**: Machine learning algorithms for insights
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Usage
+Once logged in:
+1. Navigate through the dashboard
+2. View greenhouse metrics and parameters
+3. Receive AI-powered recommendations
+4. Adjust greenhouse settings based on insights
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Future Enhancements
+Potential features that could be added:
+- Sensor integration for real-time data collection
+- Alert system for critical conditions
+- Historical data analysis
+- Mobile application version
+- Integration with IoT devices
 
-Follow these steps:
+## Support
+For any issues or questions regarding the application, please contact the development team through the appropriate channels.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## License
+This project appears to be a demonstration application. Please check with the development team for specific licensing information.
