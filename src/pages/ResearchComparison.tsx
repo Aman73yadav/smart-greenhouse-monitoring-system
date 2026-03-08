@@ -326,6 +326,62 @@ const ResearchComparison = () => {
         </CardContent>
       </Card>
 
+      {/* Methodology */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Research Methodology</CardTitle>
+          <CardDescription>
+            System development approach and research design adopted for the proposed AI-powered smart greenhouse system
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-sm text-foreground space-y-4">
+          <div>
+            <h4 className="font-semibold mb-1">1. Development Methodology — Agile with Iterative Prototyping</h4>
+            <p className="text-muted-foreground">
+              The system was developed using an <strong>Agile methodology</strong> with iterative prototyping cycles. Each sprint (1–2 weeks) focused on delivering a functional increment — starting with core sensor monitoring, then layering AI diagnostics, 3D visualization, and voice control in subsequent iterations. This approach enabled continuous user feedback and rapid adaptation to emerging requirements.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">2. Research Design — Design Science Research (DSR)</h4>
+            <p className="text-muted-foreground">
+              The study follows the <strong>Design Science Research</strong> paradigm (Hevner et al., 2004), which emphasizes creating innovative IT artifacts to solve identified problems. The artifact — the AI-powered greenhouse system — was iteratively designed, implemented, and evaluated against traditional ML-based approaches using the comparative framework presented above.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">3. System Architecture — Serverless & Event-Driven</h4>
+            <p className="text-muted-foreground">
+              A <strong>serverless, event-driven architecture</strong> was adopted using Supabase Edge Functions (Deno runtime) for backend logic, PostgreSQL with Row Level Security for data persistence, and WebSocket-based real-time subscriptions for live sensor updates. This eliminates infrastructure management overhead and enables automatic horizontal scaling.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">4. AI Integration Strategy — API-First LLM Inference</h4>
+            <p className="text-muted-foreground">
+              Rather than training custom models, the system leverages <strong>pre-trained foundation models</strong> (Google Gemini 2.5 Flash, OpenAI GPT-5) via API calls with domain-specific prompt engineering. This zero-shot approach eliminates the need for labeled training datasets, GPU infrastructure, and MLOps pipelines — significantly reducing development cost and time-to-deployment.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">5. Frontend Architecture — Component-Based SPA</h4>
+            <p className="text-muted-foreground">
+              The user interface was built as a <strong>Single Page Application (SPA)</strong> using React 18 with TypeScript, following atomic design principles. Key UI innovations include interactive 3D greenhouse visualization (Three.js/React Three Fiber), Web Speech API integration for voice commands, and real-time chart rendering with Recharts.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">6. Evaluation Method — Comparative Analysis</h4>
+            <p className="text-muted-foreground">
+              The proposed system was evaluated through <strong>comparative analysis</strong> against traditional ML-based greenhouse systems across {comparisonData.length} criteria spanning AI capability, deployment complexity, security, maintenance, offline support, and user experience. The comparison table above summarizes findings, with {proposedCount} criteria favoring the proposed approach and {neutralCount} rated as comparable.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">7. Tools & Technologies</h4>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {["React 18", "TypeScript", "Supabase", "PostgreSQL", "Deno Edge Functions", "Three.js", "Gemini 2.5 Flash", "GPT-5", "Tailwind CSS", "Recharts", "Web Speech API", "Vite"].map((tech) => (
+                <Badge key={tech} variant="outline" className="text-xs">{tech}</Badge>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Key References */}
       <Card className="mt-6">
         <CardHeader>
