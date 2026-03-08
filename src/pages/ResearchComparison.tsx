@@ -94,6 +94,78 @@ const comparisonData = [
     proposed: "Responsive SPA with 3D visualization, voice control, real-time alerts",
     advantage: "proposed",
   },
+  {
+    feature: "Data Security",
+    traditional: "Basic authentication; manual access control on API endpoints",
+    proposed: "Row Level Security (RLS) policies per table, JWT-based auth, RBAC-ready",
+    advantage: "proposed",
+  },
+  {
+    feature: "Authentication",
+    traditional: "Custom session-based auth or basic token auth",
+    proposed: "Supabase Auth with email verification, OAuth support, automatic session refresh",
+    advantage: "proposed",
+  },
+  {
+    feature: "API Security",
+    traditional: "Manual rate limiting, CORS configuration",
+    proposed: "Edge Functions with built-in CORS, anon key + service role separation",
+    advantage: "proposed",
+  },
+  {
+    feature: "System Maintenance",
+    traditional: "Manual server updates, model retraining, dependency patching",
+    proposed: "Serverless — zero server maintenance, auto-scaling Edge Functions",
+    advantage: "proposed",
+  },
+  {
+    feature: "Model Updates",
+    traditional: "Requires retraining pipeline, data versioning, A/B testing infrastructure",
+    proposed: "Automatic — foundation models updated by provider (Google/OpenAI)",
+    advantage: "proposed",
+  },
+  {
+    feature: "Database Maintenance",
+    traditional: "Manual backups, index optimization, migration scripts",
+    proposed: "Managed PostgreSQL with automatic backups and point-in-time recovery",
+    advantage: "proposed",
+  },
+  {
+    feature: "Offline Capability",
+    traditional: "Limited — requires local model deployment on edge device",
+    proposed: "Partial — cached dashboard UI works offline; AI features require connectivity",
+    advantage: "neutral",
+  },
+  {
+    feature: "Edge/Local Processing",
+    traditional: "Possible via TensorFlow Lite on Raspberry Pi / microcontrollers",
+    proposed: "Not supported — all inference via cloud API calls",
+    advantage: "traditional",
+  },
+  {
+    feature: "Network Dependency",
+    traditional: "Can operate in air-gapped mode with local models",
+    proposed: "Requires internet for AI inference, real-time sync, and weather data",
+    advantage: "traditional",
+  },
+  {
+    feature: "Data Privacy",
+    traditional: "Full control — data stays on-premise if self-hosted",
+    proposed: "Cloud-hosted with RLS isolation; data passes through third-party AI APIs",
+    advantage: "neutral",
+  },
+  {
+    feature: "Disaster Recovery",
+    traditional: "Manual backup strategies, no built-in failover",
+    proposed: "Managed cloud with automatic backups, multi-region availability",
+    advantage: "proposed",
+  },
+  {
+    feature: "Monitoring & Logging",
+    traditional: "Custom logging with ELK stack or similar",
+    proposed: "Built-in Edge Function logs, real-time database analytics, client-side error tracking",
+    advantage: "proposed",
+  },
 ];
 
 const AdvantageIcon = ({ type }: { type: string }) => {
