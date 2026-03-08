@@ -2,6 +2,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Minus } from "lucide-react";
+import dataFlowDiagram from "@/assets/data-flow-diagram.png";
+import systemArchDiagram from "@/assets/system-architecture-diagram.png";
 
 const comparisonData = [
   {
