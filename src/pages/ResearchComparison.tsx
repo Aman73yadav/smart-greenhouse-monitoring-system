@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Minus } from "lucide-react";
 import dataFlowDiagram from "@/assets/data-flow-diagram.png";
 import systemArchDiagram from "@/assets/system-architecture-diagram.png";
+import useCaseDiagram from "@/assets/use-case-diagram.png";
 
 const comparisonData = [
   {
