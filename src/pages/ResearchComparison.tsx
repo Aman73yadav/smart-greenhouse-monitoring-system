@@ -2,6 +2,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Minus } from "lucide-react";
+import dataFlowDiagram from "@/assets/data-flow-diagram.png";
+import systemArchDiagram from "@/assets/system-architecture-diagram.png";
 
 const comparisonData = [
   {
@@ -242,6 +244,85 @@ const ResearchComparison = () => {
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      {/* System Architecture Diagram */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg">System Architecture Diagram</CardTitle>
+          <CardDescription>
+            High-level block diagram showing the layered architecture of the proposed AI-powered smart greenhouse system
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <img
+            src={systemArchDiagram}
+            alt="System Architecture Diagram showing User Interface, Application, Backend, and External Services layers"
+            className="w-full rounded-lg border border-border"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Data Flow Diagram */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Data Flow Diagram</CardTitle>
+          <CardDescription>
+            End-to-end data pipeline from IoT sensor devices through backend processing to the real-time user dashboard
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <img
+            src={dataFlowDiagram}
+            alt="Data Flow Diagram showing sensor data movement from IoT devices through Edge Functions and PostgreSQL to the React dashboard via WebSocket"
+            className="w-full rounded-lg border border-border"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Sequence Diagram */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Plant Disease Diagnosis — Sequence Diagram</CardTitle>
+          <CardDescription>
+            Workflow showing the plant disease identification process from image upload to AI-powered diagnosis response
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <div className="bg-muted/30 rounded-lg p-6 font-mono text-xs leading-relaxed text-foreground whitespace-pre">
+{`User                    React Frontend           Edge Function            Gemini 2.5 Flash
+ │                           │                        │                        │
+ │  Upload plant image       │                        │                        │
+ │ ─────────────────────────>│                        │                        │
+ │                           │                        │                        │
+ │                           │  FileReader API        │                        │
+ │                           │  Convert to Base64     │                        │
+ │                           │                        │                        │
+ │                           │  POST /plant-disease-  │                        │
+ │                           │  identify              │                        │
+ │                           │ ──────────────────────>│                        │
+ │                           │                        │                        │
+ │                           │                        │  Send image + prompt   │
+ │                           │                        │ ──────────────────────>│
+ │                           │                        │                        │
+ │                           │                        │                        │  Analyze image
+ │                           │                        │                        │  Identify disease
+ │                           │                        │                        │  Generate treatment
+ │                           │                        │                        │
+ │                           │                        │  JSON response         │
+ │                           │                        │  (disease, confidence, │
+ │                           │                        │   treatment plan)      │
+ │                           │                        │ <──────────────────────│
+ │                           │                        │                        │
+ │                           │  Diagnosis result      │                        │
+ │                           │ <──────────────────────│                        │
+ │                           │                        │                        │
+ │  Display diagnosis        │                        │                        │
+ │  with treatment plan      │                        │                        │
+ │ <─────────────────────────│                        │                        │
+ │                           │                        │                        │`}
+          </div>
         </CardContent>
       </Card>
 
