@@ -45,6 +45,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route path="/research-comparison" element={<ResearchComparison />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
