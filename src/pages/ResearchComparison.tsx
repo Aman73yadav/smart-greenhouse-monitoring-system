@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Minus } from "lucide-react";
 import dataFlowDiagram from "@/assets/data-flow-diagram.png";
 import systemArchDiagram from "@/assets/system-architecture-diagram.png";
+import useCaseDiagram from "@/assets/use-case-diagram.png";
 
 const comparisonData = [
   {
@@ -244,6 +245,23 @@ const ResearchComparison = () => {
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      {/* Use Case Diagram */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Use Case Diagram</CardTitle>
+          <CardDescription>
+            UML use case diagram showing all actor interactions with the Smart Greenhouse system — Farmer, IoT Devices, AI Services, Weather API, and Email Service
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <img
+            src={useCaseDiagram}
+            alt="Use Case Diagram showing Farmer, IoT Devices, AI Service, Weather API, and Email Service actors interacting with the Smart Greenhouse System"
+            className="w-full rounded-lg border border-border"
+          />
         </CardContent>
       </Card>
 
