@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import ResearchComparison from "./pages/ResearchComparison";
 
 const queryClient = new QueryClient();
 
