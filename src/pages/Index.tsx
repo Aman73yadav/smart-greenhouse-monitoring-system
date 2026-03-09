@@ -26,6 +26,7 @@ import { SmartIrrigation } from '@/components/dashboard/SmartIrrigation';
 import { PlantDiseaseEncyclopedia } from '@/components/dashboard/PlantDiseaseEncyclopedia';
 import { VoiceControl } from '@/components/dashboard/VoiceControl';
 import { FloatingVoiceButton } from '@/components/dashboard/FloatingVoiceButton';
+import { IoTDeviceRegistration } from '@/components/dashboard/IoTDeviceRegistration';
 import { useRealtimeSensors } from '@/hooks/useRealtimeSensors';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { useEmailAlerts } from '@/hooks/useEmailAlerts';
