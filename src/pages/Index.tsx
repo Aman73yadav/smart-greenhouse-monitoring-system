@@ -374,35 +374,7 @@ const Index = () => {
           )}
 
           {activeTab === 'devices' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {iotDevices.map(device => (
-                <div key={device.id} className="glass-card p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-2">
-                      {device.status === 'online' ? <Wifi className="w-4 h-4 text-success" /> : <WifiOff className="w-4 h-4 text-destructive" />}
-                      <span className={cn("status-dot", device.status === 'online' ? 'bg-success' : device.status === 'error' ? 'bg-warning' : 'bg-destructive')} />
-                    </div>
-                    <span className="text-xs text-muted-foreground">{device.deviceId}</span>
-                  </div>
-                  <h4 className="font-semibold">{device.name}</h4>
-                  <p className="text-sm text-muted-foreground mb-3">{device.zone}</p>
-                  <div className="flex gap-4 text-xs text-muted-foreground">
-                    {device.batteryLevel !== undefined && (
-                      <div className="flex items-center gap-1">
-                        <Battery className="w-3 h-3" />
-                        <span>{device.batteryLevel}%</span>
-                      </div>
-                    )}
-                    {device.signalStrength !== undefined && (
-                      <div className="flex items-center gap-1">
-                        <Signal className="w-3 h-3" />
-                        <span>{device.signalStrength}%</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <IoTDeviceRegistration />
           )}
 
           {activeTab === 'analytics' && (
