@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Minus } from "lucide-react";
+import { Check, X, Minus, Monitor, Server, Database, Cloud, Wifi, Shield, Cpu, Eye, Mic, BarChart3, Box, Zap, Globe, Mail, BrainCircuit, Layers, ArrowDown, Lock, Radio } from "lucide-react";
 import dataFlowDiagram from "@/assets/data-flow-diagram.png";
 import systemArchDiagram from "@/assets/system-architecture-diagram.png";
 import useCaseDiagram from "@/assets/use-case-diagram.png";
@@ -265,13 +265,159 @@ const ResearchComparison = () => {
         </CardContent>
       </Card>
 
-      {/* System Architecture Diagram */}
+      {/* System Architecture Diagram — Interactive */}
+      <Card className="mt-6 overflow-hidden">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Layers className="h-5 w-5 text-primary" />
+            System Architecture Diagram
+          </CardTitle>
+          <CardDescription>
+            3-Tier layered architecture of the proposed AI-powered smart greenhouse system with serverless backend and real-time data pipeline
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-0">
+          {/* PRESENTATION LAYER */}
+          <div className="relative">
+            <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Monitor className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground text-sm">PRESENTATION LAYER</h3>
+                  <p className="text-[10px] text-muted-foreground">React 18 Single Page Application</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { icon: Box, label: "3D Visualization", desc: "Three.js / R3F", color: "text-violet-500" },
+                  { icon: BarChart3, label: "Analytics", desc: "Recharts", color: "text-blue-500" },
+                  { icon: Mic, label: "Voice Control", desc: "Web Speech API", color: "text-emerald-500" },
+                  { icon: Eye, label: "Real-time UI", desc: "WebSocket Sync", color: "text-amber-500" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-lg border border-border bg-background/80 p-3 text-center space-y-1 hover:shadow-md transition-shadow">
+                    <item.icon className={`h-5 w-5 mx-auto ${item.color}`} />
+                    <p className="text-xs font-semibold text-foreground">{item.label}</p>
+                    <p className="text-[10px] text-muted-foreground">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Connector */}
+            <div className="flex flex-col items-center py-2 text-muted-foreground">
+              <div className="h-4 w-px bg-border" />
+              <Badge variant="outline" className="text-[9px] px-2 py-0.5 bg-background">HTTPS / WebSocket</Badge>
+              <ArrowDown className="h-3 w-3 mt-1" />
+            </div>
+          </div>
+
+          {/* APPLICATION LAYER */}
+          <div className="relative">
+            <div className="rounded-xl border-2 border-blue-500/40 bg-blue-500/5 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <Server className="h-4 w-4 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground text-sm">APPLICATION LAYER</h3>
+                  <p className="text-[10px] text-muted-foreground">Supabase Edge Functions (Deno Runtime)</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {[
+                  { icon: Cpu, label: "Sensor Ingest", desc: "sensor-data", color: "text-cyan-500" },
+                  { icon: BrainCircuit, label: "AI Diagnosis", desc: "plant-health-diagnosis", color: "text-purple-500" },
+                  { icon: Zap, label: "Yield Prediction", desc: "yield-prediction", color: "text-orange-500" },
+                  { icon: Globe, label: "Weather Forecast", desc: "Open-Meteo API", color: "text-sky-500" },
+                  { icon: Mail, label: "Email Alerts", desc: "Resend API", color: "text-pink-500" },
+                  { icon: Eye, label: "Disease ID", desc: "plant-disease-identify", color: "text-red-500" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-lg border border-border bg-background/80 p-3 text-center space-y-1 hover:shadow-md transition-shadow">
+                    <item.icon className={`h-5 w-5 mx-auto ${item.color}`} />
+                    <p className="text-xs font-semibold text-foreground">{item.label}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Connector */}
+            <div className="flex flex-col items-center py-2 text-muted-foreground">
+              <div className="h-4 w-px bg-border" />
+              <Badge variant="outline" className="text-[9px] px-2 py-0.5 bg-background">SQL / Realtime Subscriptions</Badge>
+              <ArrowDown className="h-3 w-3 mt-1" />
+            </div>
+          </div>
+
+          {/* DATA LAYER */}
+          <div className="relative">
+            <div className="rounded-xl border-2 border-emerald-500/40 bg-emerald-500/5 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-8 w-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                  <Database className="h-4 w-4 text-emerald-500" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground text-sm">DATA LAYER</h3>
+                  <p className="text-[10px] text-muted-foreground">PostgreSQL + Row Level Security + Triggers</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "sensor_readings", desc: "Temp, Humidity, CO₂", icon: Radio },
+                  { label: "plants", desc: "Growth stage, health", icon: Eye },
+                  { label: "iot_devices", desc: "Status, firmware", icon: Wifi },
+                  { label: "profiles", desc: "User accounts", icon: Shield },
+                  { label: "care_tasks", desc: "Schedules, checklists", icon: Check },
+                  { label: "yield_records", desc: "Predicted vs actual", icon: BarChart3 },
+                  { label: "control_settings", desc: "HVAC, irrigation", icon: Cpu },
+                  { label: "schedules", desc: "Automation rules", icon: Zap },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-lg border border-border bg-background/80 p-2.5 space-y-0.5 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-1.5">
+                      <item.icon className="h-3 w-3 text-emerald-500 shrink-0" />
+                      <p className="text-[10px] font-mono font-semibold text-foreground truncate">{item.label}</p>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Badge variant="secondary" className="text-[9px] gap-1"><Lock className="h-2.5 w-2.5" />RLS Policies</Badge>
+                <Badge variant="secondary" className="text-[9px] gap-1"><Zap className="h-2.5 w-2.5" />Triggers</Badge>
+                <Badge variant="secondary" className="text-[9px] gap-1"><Radio className="h-2.5 w-2.5" />Realtime Publication</Badge>
+                <Badge variant="secondary" className="text-[9px] gap-1"><Shield className="h-2.5 w-2.5" />JWT Auth</Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* External Services */}
+          <div className="mt-4 rounded-xl border border-dashed border-muted-foreground/30 bg-muted/20 p-4">
+            <p className="text-[10px] font-semibold text-muted-foreground mb-3 uppercase tracking-wider">External Services</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: "Google Gemini 2.5 Flash", desc: "AI Inference", icon: BrainCircuit },
+                { label: "OpenAI GPT-5", desc: "AI Inference", icon: BrainCircuit },
+                { label: "Open-Meteo", desc: "Weather Data", icon: Cloud },
+                { label: "Resend", desc: "Transactional Email", icon: Mail },
+              ].map((item) => (
+                <div key={item.label} className="rounded-lg border border-border bg-background/60 p-2.5 text-center space-y-0.5">
+                  <item.icon className="h-4 w-4 mx-auto text-muted-foreground" />
+                  <p className="text-[10px] font-semibold text-foreground">{item.label}</p>
+                  <p className="text-[9px] text-muted-foreground">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Original System Architecture Image (for reference) */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="text-lg">System Architecture Diagram</CardTitle>
-          <CardDescription>
-            High-level block diagram showing the layered architecture of the proposed AI-powered smart greenhouse system
-          </CardDescription>
+          <CardTitle className="text-lg">System Architecture — Block Diagram</CardTitle>
+          <CardDescription>Original high-level block diagram representation</CardDescription>
         </CardHeader>
         <CardContent>
           <img
