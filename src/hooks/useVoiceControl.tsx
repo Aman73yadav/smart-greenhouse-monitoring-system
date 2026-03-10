@@ -65,7 +65,7 @@ export const useVoiceControl = ({ onToggleControl, onSetValue, onNavigate }: Use
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const wakeWordRecognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const shouldRestartRef = useRef(false);
-  const awakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const awakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const { speak, setEnabled: setTtsEnabledInternal, isSupported: ttsSupported } = useTextToSpeech();
 
