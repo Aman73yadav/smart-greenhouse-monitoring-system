@@ -149,10 +149,9 @@ export const IoTDeviceRegistration = () => {
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sensor_node">Sensor Node</SelectItem>
+                    <SelectItem value="sensor">Sensor</SelectItem>
                     <SelectItem value="actuator">Actuator</SelectItem>
-                    <SelectItem value="gateway">Gateway</SelectItem>
-                    <SelectItem value="camera">Camera</SelectItem>
+                    <SelectItem value="controller">Controller</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
