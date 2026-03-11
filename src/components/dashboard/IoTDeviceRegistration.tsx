@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw } from 'lucide-react';
+import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface RegisteredDevice {
@@ -23,9 +23,19 @@ interface RegisteredDevice {
   created_at: string;
 }
 
+interface DeviceSensorReading {
+  temperature: number | null;
+  humidity: number | null;
+  soil_moisture: number | null;
+  light_level: number | null;
+  co2_level: number | null;
+  recorded_at: string;
+}
+
 export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
+  const [deviceReadings, setDeviceReadings] = useState<Record<string, DeviceSensorReading>>({});
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -47,6 +57,33 @@ export const IoTDeviceRegistration = () => {
       toast.error('Failed to fetch devices');
     } else {
       setDevices(data || []);
+      // Fetch latest readings for each device
+      if (data && data.length > 0) {
+        const deviceIds = data.map(d => d.id);
+        const { data: readings } = await supabase
+          .from('sensor_readings')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('device_id', deviceIds)
+          .order('recorded_at', { ascending: false });
+
+        if (readings) {
+          const latestByDevice: Record<string, DeviceSensorReading> = {};
+          readings.forEach(r => {
+            if (r.device_id && !latestByDevice[r.device_id]) {
+              latestByDevice[r.device_id] = {
+                temperature: r.temperature,
+                humidity: r.humidity,
+                soil_moisture: r.soil_moisture,
+                light_level: r.light_level,
+                co2_level: r.co2_level,
+                recorded_at: r.recorded_at,
+              };
+            }
+          });
+          setDeviceReadings(latestByDevice);
+        }
+      }
     }
   };
 
@@ -236,6 +273,53 @@ export const IoTDeviceRegistration = () => {
                     </Button>
                   </div>
                 </div>
+
+                {/* Latest sensor readings */}
+                {deviceReadings[device.id] && (
+                  <div className="bg-muted/30 rounded-md p-2 space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Latest Readings</p>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                      {deviceReadings[device.id].temperature !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Thermometer className="w-3 h-3 text-destructive" />
+                          <span className="text-muted-foreground">Temp:</span>
+                          <span className="font-medium">{deviceReadings[device.id].temperature}°C</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].humidity !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Droplets className="w-3 h-3 text-primary" />
+                          <span className="text-muted-foreground">Hum:</span>
+                          <span className="font-medium">{deviceReadings[device.id].humidity}%</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].soil_moisture !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Droplets className="w-3 h-3 text-accent-foreground" />
+                          <span className="text-muted-foreground">Soil:</span>
+                          <span className="font-medium">{deviceReadings[device.id].soil_moisture}%</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].light_level !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Sun className="w-3 h-3 text-warning" />
+                          <span className="text-muted-foreground">Light:</span>
+                          <span className="font-medium">{deviceReadings[device.id].light_level} lux</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].co2_level !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Wind className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">CO₂:</span>
+                          <span className="font-medium">{deviceReadings[device.id].co2_level} ppm</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(deviceReadings[device.id].recorded_at).toLocaleString()}
+                    </p>
+                  </div>
+                )}
 
                 <div className="flex gap-4 text-xs text-muted-foreground">
                   {device.battery_level !== null && (
