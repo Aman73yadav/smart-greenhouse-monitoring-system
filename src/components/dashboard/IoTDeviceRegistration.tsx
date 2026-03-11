@@ -136,6 +136,11 @@ export const IoTDeviceRegistration = () => {
                 recorded_at: r.recorded_at,
               },
             }));
+            // Flash effect
+            setRecentlyUpdated(prev => ({ ...prev, [r.device_id]: true }));
+            setTimeout(() => {
+              setRecentlyUpdated(prev => ({ ...prev, [r.device_id]: false }));
+            }, 2000);
           }
         }
       )
