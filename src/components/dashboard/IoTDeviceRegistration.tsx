@@ -36,9 +36,28 @@ export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
   const [deviceReadings, setDeviceReadings] = useState<Record<string, DeviceSensorReading>>({});
+  const [recentlyUpdated, setRecentlyUpdated] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [, setTick] = useState(0); // force re-render for relative timestamps
+
+  // Tick every 10s to keep relative timestamps fresh
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTimeAgo = useCallback((dateStr: string) => {
+    const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+    if (seconds < 5) return 'just now';
+    if (seconds < 60) return `${seconds}s ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return new Date(dateStr).toLocaleDateString();
+  }, []);
 
   // Form state
   const [deviceName, setDeviceName] = useState('');
