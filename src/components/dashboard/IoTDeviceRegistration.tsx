@@ -23,6 +23,15 @@ interface RegisteredDevice {
   created_at: string;
 }
 
+interface DeviceSensorReading {
+  temperature: number | null;
+  humidity: number | null;
+  soil_moisture: number | null;
+  light_level: number | null;
+  co2_level: number | null;
+  recorded_at: string;
+}
+
 export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
