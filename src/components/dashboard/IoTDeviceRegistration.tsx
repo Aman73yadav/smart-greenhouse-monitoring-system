@@ -57,6 +57,33 @@ export const IoTDeviceRegistration = () => {
       toast.error('Failed to fetch devices');
     } else {
       setDevices(data || []);
+      // Fetch latest readings for each device
+      if (data && data.length > 0) {
+        const deviceIds = data.map(d => d.id);
+        const { data: readings } = await supabase
+          .from('sensor_readings')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('device_id', deviceIds)
+          .order('recorded_at', { ascending: false });
+
+        if (readings) {
+          const latestByDevice: Record<string, DeviceSensorReading> = {};
+          readings.forEach(r => {
+            if (r.device_id && !latestByDevice[r.device_id]) {
+              latestByDevice[r.device_id] = {
+                temperature: r.temperature,
+                humidity: r.humidity,
+                soil_moisture: r.soil_moisture,
+                light_level: r.light_level,
+                co2_level: r.co2_level,
+                recorded_at: r.recorded_at,
+              };
+            }
+          });
+          setDeviceReadings(latestByDevice);
+        }
+      }
     }
   };
 
