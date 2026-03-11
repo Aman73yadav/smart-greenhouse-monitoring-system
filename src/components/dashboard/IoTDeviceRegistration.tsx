@@ -320,6 +320,8 @@ export const IoTDeviceRegistration = () => {
                     </p>
                   </div>
                 )}
+
+                <div className="flex gap-4 text-xs text-muted-foreground">
                   {device.battery_level !== null && (
                     <div className="flex items-center gap-1">
                       <Battery className="w-3 h-3" />
