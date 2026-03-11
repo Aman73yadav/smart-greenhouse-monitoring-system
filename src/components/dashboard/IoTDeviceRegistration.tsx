@@ -35,6 +35,7 @@ interface DeviceSensorReading {
 export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
+  const [deviceReadings, setDeviceReadings] = useState<Record<string, DeviceSensorReading>>({});
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
