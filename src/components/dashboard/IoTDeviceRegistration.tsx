@@ -274,7 +274,52 @@ export const IoTDeviceRegistration = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4 text-xs text-muted-foreground">
+                {/* Latest sensor readings */}
+                {deviceReadings[device.id] && (
+                  <div className="bg-muted/30 rounded-md p-2 space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Latest Readings</p>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                      {deviceReadings[device.id].temperature !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Thermometer className="w-3 h-3 text-destructive" />
+                          <span className="text-muted-foreground">Temp:</span>
+                          <span className="font-medium">{deviceReadings[device.id].temperature}°C</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].humidity !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Droplets className="w-3 h-3 text-primary" />
+                          <span className="text-muted-foreground">Hum:</span>
+                          <span className="font-medium">{deviceReadings[device.id].humidity}%</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].soil_moisture !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Droplets className="w-3 h-3 text-accent-foreground" />
+                          <span className="text-muted-foreground">Soil:</span>
+                          <span className="font-medium">{deviceReadings[device.id].soil_moisture}%</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].light_level !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Sun className="w-3 h-3 text-yellow-500" />
+                          <span className="text-muted-foreground">Light:</span>
+                          <span className="font-medium">{deviceReadings[device.id].light_level} lux</span>
+                        </div>
+                      )}
+                      {deviceReadings[device.id].co2_level !== null && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Wind className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">CO₂:</span>
+                          <span className="font-medium">{deviceReadings[device.id].co2_level} ppm</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(deviceReadings[device.id].recorded_at).toLocaleString()}
+                    </p>
+                  </div>
+                )}
                   {device.battery_level !== null && (
                     <div className="flex items-center gap-1">
                       <Battery className="w-3 h-3" />
