@@ -357,8 +357,30 @@ export const IoTDeviceRegistration = () => {
 
                 {/* Latest sensor readings */}
                 {deviceReadings[device.id] && (
-                  <div className="bg-muted/30 rounded-md p-2 space-y-1.5">
-                    <p className="text-xs font-medium text-muted-foreground">Latest Readings</p>
+                  <div className={cn(
+                    "rounded-md p-2 space-y-1.5 transition-colors duration-500",
+                    recentlyUpdated[device.id]
+                      ? "bg-primary/15 ring-1 ring-primary/30"
+                      : "bg-muted/30"
+                  )}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Activity className="w-3 h-3 text-primary" />
+                        <p className="text-xs font-medium text-muted-foreground">Latest Readings</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {/* Live pulse dot */}
+                        {(Date.now() - new Date(deviceReadings[device.id].recorded_at).getTime()) < 60000 && (
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                          </span>
+                        )}
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatTimeAgo(deviceReadings[device.id].recorded_at)}
+                        </span>
+                      </div>
+                    </div>
                     <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                       {deviceReadings[device.id].temperature !== null && (
                         <div className="flex items-center gap-1.5 text-xs">
@@ -396,9 +418,6 @@ export const IoTDeviceRegistration = () => {
                         </div>
                       )}
                     </div>
-                    <p className="text-[10px] text-muted-foreground">
-                      {new Date(deviceReadings[device.id].recorded_at).toLocaleString()}
-                    </p>
                   </div>
                 )}
 
