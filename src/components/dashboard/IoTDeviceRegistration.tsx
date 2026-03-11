@@ -89,6 +89,63 @@ export const IoTDeviceRegistration = () => {
 
   useEffect(() => {
     fetchDevices();
+
+    if (!user) return;
+
+    // Real-time subscription for new sensor readings
+    const sensorChannel = supabase
+      .channel('iot-sensor-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'sensor_readings',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const r = payload.new as any;
+          if (r.device_id) {
+            setDeviceReadings(prev => ({
+              ...prev,
+              [r.device_id]: {
+                temperature: r.temperature,
+                humidity: r.humidity,
+                soil_moisture: r.soil_moisture,
+                light_level: r.light_level,
+                co2_level: r.co2_level,
+                recorded_at: r.recorded_at,
+              },
+            }));
+          }
+        }
+      )
+      .subscribe();
+
+    // Real-time subscription for device status changes
+    const deviceChannel = supabase
+      .channel('iot-device-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'iot_devices',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const updated = payload.new as RegisteredDevice;
+          setDevices(prev =>
+            prev.map(d => (d.id === updated.id ? updated : d))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(sensorChannel);
+      supabase.removeChannel(deviceChannel);
+    };
   }, [user]);
 
   const handleRegister = async () => {
