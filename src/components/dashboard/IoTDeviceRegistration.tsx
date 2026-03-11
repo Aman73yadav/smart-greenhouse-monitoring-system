@@ -302,7 +302,7 @@ export const IoTDeviceRegistration = () => {
                       )}
                       {deviceReadings[device.id].light_level !== null && (
                         <div className="flex items-center gap-1.5 text-xs">
-                          <Sun className="w-3 h-3 text-yellow-500" />
+                          <Sun className="w-3 h-3 text-warning" />
                           <span className="text-muted-foreground">Light:</span>
                           <span className="font-medium">{deviceReadings[device.id].light_level} lux</span>
                         </div>
