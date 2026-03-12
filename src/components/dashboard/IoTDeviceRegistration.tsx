@@ -556,7 +556,7 @@ export const IoTDeviceRegistration = () => {
                     {deviceHistory[device.id] && deviceHistory[device.id].length > 1 && (
                       <div className="grid grid-cols-2 gap-2 pt-1">
                         {deviceHistory[device.id][0].temperature !== null && (() => {
-                          const t = THRESHOLDS.temperature;
+                          const t = getThresholds(device.id).temperature;
                           const vals = deviceHistory[device.id].map(d => d.temperature ?? 0);
                           const domain = [Math.min(...vals, t.min) - 2, Math.max(...vals, t.max) + 2];
                           return (
