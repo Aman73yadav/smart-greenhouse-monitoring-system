@@ -389,14 +389,79 @@ export const IoTDeviceRegistration = () => {
                       {device.status || 'offline'}
                     </Badge>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive/60 hover:text-destructive"
-                    onClick={() => handleDelete(device.id)}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                          <Settings2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72" align="end">
+                        <div className="space-y-3">
+                          <p className="text-sm font-medium">Alert Thresholds</p>
+                          {(Object.keys(THRESHOLD_RANGES) as Array<keyof ThresholdConfig>).map(metric => {
+                            const range = THRESHOLD_RANGES[metric];
+                            const current = getThresholds(device.id)[metric];
+                            return (
+                              <div key={metric} className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-xs capitalize">{metric.replace('_', ' ')}</Label>
+                                  <span className="text-[10px] text-muted-foreground">{current.min} – {current.max} {range.label}</span>
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground w-6">Min</span>
+                                    <Slider
+                                      min={range.absMin}
+                                      max={current.max - range.step}
+                                      step={range.step}
+                                      value={[current.min]}
+                                      onValueChange={([v]) => updateThreshold(device.id, metric, 'min', v)}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-destructive w-6">Max</span>
+                                    <Slider
+                                      min={current.min + range.step}
+                                      max={range.absMax}
+                                      step={range.step}
+                                      value={[current.max]}
+                                      onValueChange={([v]) => updateThreshold(device.id, metric, 'max', v)}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => {
+                              setDeviceThresholds(prev => {
+                                const updated = { ...prev };
+                                delete updated[device.id];
+                                localStorage.setItem('iot-device-thresholds', JSON.stringify(updated));
+                                return updated;
+                              });
+                            }}
+                          >
+                            Reset to Defaults
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive/60 hover:text-destructive"
+                      onClick={() => handleDelete(device.id)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div>
