@@ -439,6 +439,59 @@ export const IoTDeviceRegistration = () => {
                         </div>
                       )}
                     </div>
+                    {/* Sparkline charts */}
+                    {deviceHistory[device.id] && deviceHistory[device.id].length > 1 && (
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        {deviceHistory[device.id][0].temperature !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Temp</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="temperature" stroke="hsl(var(--destructive))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        {deviceHistory[device.id][0].humidity !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Humidity</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="humidity" stroke="hsl(var(--primary))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        {deviceHistory[device.id][0].soil_moisture !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Soil</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="soil_moisture" stroke="hsl(var(--accent-foreground))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        {deviceHistory[device.id][0].light_level !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Light</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="light_level" stroke="hsl(var(--warning, 45 95% 60%))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
