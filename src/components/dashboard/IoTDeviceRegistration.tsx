@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, ReferenceLine, YAxis } from 'recharts';
 
 interface RegisteredDevice {
   id: string;
@@ -32,6 +32,13 @@ interface DeviceSensorReading {
   co2_level: number | null;
   recorded_at: string;
 }
+
+const THRESHOLDS = {
+  temperature: { max: 35, min: 10, label: '°C' },
+  humidity: { max: 85, min: 30, label: '%' },
+  soil_moisture: { max: 80, min: 20, label: '%' },
+  light_level: { max: 50000, min: 2000, label: 'lux' },
+};
 
 export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
@@ -442,54 +449,86 @@ export const IoTDeviceRegistration = () => {
                     {/* Sparkline charts */}
                     {deviceHistory[device.id] && deviceHistory[device.id].length > 1 && (
                       <div className="grid grid-cols-2 gap-2 pt-1">
-                        {deviceHistory[device.id][0].temperature !== null && (
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-0.5">Temp</p>
-                            <div className="h-8">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={deviceHistory[device.id]}>
-                                  <Line type="monotone" dataKey="temperature" stroke="hsl(var(--destructive))" strokeWidth={1.5} dot={false} />
-                                </LineChart>
-                              </ResponsiveContainer>
+                        {deviceHistory[device.id][0].temperature !== null && (() => {
+                          const t = THRESHOLDS.temperature;
+                          const vals = deviceHistory[device.id].map(d => d.temperature ?? 0);
+                          const domain = [Math.min(...vals, t.min) - 2, Math.max(...vals, t.max) + 2];
+                          return (
+                            <div>
+                              <p className="text-[10px] text-muted-foreground mb-0.5">Temp</p>
+                              <div className="h-10">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <LineChart data={deviceHistory[device.id]}>
+                                    <YAxis domain={domain} hide />
+                                    <ReferenceLine y={t.max} stroke="hsl(var(--destructive))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <ReferenceLine y={t.min} stroke="hsl(var(--primary))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <Line type="monotone" dataKey="temperature" stroke="hsl(var(--destructive))" strokeWidth={1.5} dot={false} />
+                                  </LineChart>
+                                </ResponsiveContainer>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        {deviceHistory[device.id][0].humidity !== null && (
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-0.5">Humidity</p>
-                            <div className="h-8">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={deviceHistory[device.id]}>
-                                  <Line type="monotone" dataKey="humidity" stroke="hsl(var(--primary))" strokeWidth={1.5} dot={false} />
-                                </LineChart>
-                              </ResponsiveContainer>
+                          );
+                        })()}
+                        {deviceHistory[device.id][0].humidity !== null && (() => {
+                          const t = THRESHOLDS.humidity;
+                          const vals = deviceHistory[device.id].map(d => d.humidity ?? 0);
+                          const domain = [Math.min(...vals, t.min) - 5, Math.max(...vals, t.max) + 5];
+                          return (
+                            <div>
+                              <p className="text-[10px] text-muted-foreground mb-0.5">Humidity</p>
+                              <div className="h-10">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <LineChart data={deviceHistory[device.id]}>
+                                    <YAxis domain={domain} hide />
+                                    <ReferenceLine y={t.max} stroke="hsl(var(--destructive))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <ReferenceLine y={t.min} stroke="hsl(var(--primary))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <Line type="monotone" dataKey="humidity" stroke="hsl(var(--primary))" strokeWidth={1.5} dot={false} />
+                                  </LineChart>
+                                </ResponsiveContainer>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        {deviceHistory[device.id][0].soil_moisture !== null && (
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-0.5">Soil</p>
-                            <div className="h-8">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={deviceHistory[device.id]}>
-                                  <Line type="monotone" dataKey="soil_moisture" stroke="hsl(var(--accent-foreground))" strokeWidth={1.5} dot={false} />
-                                </LineChart>
-                              </ResponsiveContainer>
+                          );
+                        })()}
+                        {deviceHistory[device.id][0].soil_moisture !== null && (() => {
+                          const t = THRESHOLDS.soil_moisture;
+                          const vals = deviceHistory[device.id].map(d => d.soil_moisture ?? 0);
+                          const domain = [Math.min(...vals, t.min) - 5, Math.max(...vals, t.max) + 5];
+                          return (
+                            <div>
+                              <p className="text-[10px] text-muted-foreground mb-0.5">Soil</p>
+                              <div className="h-10">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <LineChart data={deviceHistory[device.id]}>
+                                    <YAxis domain={domain} hide />
+                                    <ReferenceLine y={t.max} stroke="hsl(var(--destructive))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <ReferenceLine y={t.min} stroke="hsl(var(--primary))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <Line type="monotone" dataKey="soil_moisture" stroke="hsl(var(--accent-foreground))" strokeWidth={1.5} dot={false} />
+                                  </LineChart>
+                                </ResponsiveContainer>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        {deviceHistory[device.id][0].light_level !== null && (
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-0.5">Light</p>
-                            <div className="h-8">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={deviceHistory[device.id]}>
-                                  <Line type="monotone" dataKey="light_level" stroke="hsl(var(--warning, 45 95% 60%))" strokeWidth={1.5} dot={false} />
-                                </LineChart>
-                              </ResponsiveContainer>
+                          );
+                        })()}
+                        {deviceHistory[device.id][0].light_level !== null && (() => {
+                          const t = THRESHOLDS.light_level;
+                          const vals = deviceHistory[device.id].map(d => d.light_level ?? 0);
+                          const domain = [Math.min(...vals, t.min) - 500, Math.max(...vals, t.max) + 500];
+                          return (
+                            <div>
+                              <p className="text-[10px] text-muted-foreground mb-0.5">Light</p>
+                              <div className="h-10">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <LineChart data={deviceHistory[device.id]}>
+                                    <YAxis domain={domain} hide />
+                                    <ReferenceLine y={t.max} stroke="hsl(var(--destructive))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <ReferenceLine y={t.min} stroke="hsl(var(--primary))" strokeDasharray="3 2" strokeWidth={1} />
+                                    <Line type="monotone" dataKey="light_level" stroke="hsl(var(--warning, 45 95% 60%))" strokeWidth={1.5} dot={false} />
+                                  </LineChart>
+                                </ResponsiveContainer>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
                     )}
                   </div>
