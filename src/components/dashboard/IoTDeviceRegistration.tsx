@@ -33,6 +33,13 @@ interface DeviceSensorReading {
   recorded_at: string;
 }
 
+const THRESHOLDS = {
+  temperature: { max: 35, min: 10, label: '°C' },
+  humidity: { max: 85, min: 30, label: '%' },
+  soil_moisture: { max: 80, min: 20, label: '%' },
+  light_level: { max: 50000, min: 2000, label: 'lux' },
+};
+
 export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
