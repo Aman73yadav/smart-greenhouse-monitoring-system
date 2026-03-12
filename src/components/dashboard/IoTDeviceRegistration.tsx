@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
 interface RegisteredDevice {
   id: string;
@@ -36,6 +37,7 @@ export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
   const [deviceReadings, setDeviceReadings] = useState<Record<string, DeviceSensorReading>>({});
+  const [deviceHistory, setDeviceHistory] = useState<Record<string, DeviceSensorReading[]>>({});
   const [recentlyUpdated, setRecentlyUpdated] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -88,19 +90,36 @@ export const IoTDeviceRegistration = () => {
 
         if (readings) {
           const latestByDevice: Record<string, DeviceSensorReading> = {};
+          const historyByDevice: Record<string, DeviceSensorReading[]> = {};
           readings.forEach(r => {
-            if (r.device_id && !latestByDevice[r.device_id]) {
-              latestByDevice[r.device_id] = {
-                temperature: r.temperature,
-                humidity: r.humidity,
-                soil_moisture: r.soil_moisture,
-                light_level: r.light_level,
-                co2_level: r.co2_level,
-                recorded_at: r.recorded_at,
-              };
+            if (r.device_id) {
+              if (!latestByDevice[r.device_id]) {
+                latestByDevice[r.device_id] = {
+                  temperature: r.temperature,
+                  humidity: r.humidity,
+                  soil_moisture: r.soil_moisture,
+                  light_level: r.light_level,
+                  co2_level: r.co2_level,
+                  recorded_at: r.recorded_at,
+                };
+              }
+              if (!historyByDevice[r.device_id]) historyByDevice[r.device_id] = [];
+              if (historyByDevice[r.device_id].length < 10) {
+                historyByDevice[r.device_id].push({
+                  temperature: r.temperature,
+                  humidity: r.humidity,
+                  soil_moisture: r.soil_moisture,
+                  light_level: r.light_level,
+                  co2_level: r.co2_level,
+                  recorded_at: r.recorded_at,
+                });
+              }
             }
           });
+          // Reverse history so oldest first for sparkline
+          Object.keys(historyByDevice).forEach(k => historyByDevice[k].reverse());
           setDeviceReadings(latestByDevice);
+          setDeviceHistory(historyByDevice);
         }
       }
     }
@@ -125,17 +144,19 @@ export const IoTDeviceRegistration = () => {
         (payload) => {
           const r = payload.new as any;
           if (r.device_id) {
-            setDeviceReadings(prev => ({
-              ...prev,
-              [r.device_id]: {
-                temperature: r.temperature,
-                humidity: r.humidity,
-                soil_moisture: r.soil_moisture,
-                light_level: r.light_level,
-                co2_level: r.co2_level,
-                recorded_at: r.recorded_at,
-              },
-            }));
+            const reading: DeviceSensorReading = {
+              temperature: r.temperature,
+              humidity: r.humidity,
+              soil_moisture: r.soil_moisture,
+              light_level: r.light_level,
+              co2_level: r.co2_level,
+              recorded_at: r.recorded_at,
+            };
+            setDeviceReadings(prev => ({ ...prev, [r.device_id]: reading }));
+            setDeviceHistory(prev => {
+              const existing = prev[r.device_id] || [];
+              return { ...prev, [r.device_id]: [...existing, reading].slice(-10) };
+            });
             // Flash effect
             setRecentlyUpdated(prev => ({ ...prev, [r.device_id]: true }));
             setTimeout(() => {
@@ -418,6 +439,59 @@ export const IoTDeviceRegistration = () => {
                         </div>
                       )}
                     </div>
+                    {/* Sparkline charts */}
+                    {deviceHistory[device.id] && deviceHistory[device.id].length > 1 && (
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        {deviceHistory[device.id][0].temperature !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Temp</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="temperature" stroke="hsl(var(--destructive))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        {deviceHistory[device.id][0].humidity !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Humidity</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="humidity" stroke="hsl(var(--primary))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        {deviceHistory[device.id][0].soil_moisture !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Soil</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="soil_moisture" stroke="hsl(var(--accent-foreground))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        {deviceHistory[device.id][0].light_level !== null && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Light</p>
+                            <div className="h-8">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={deviceHistory[device.id]}>
+                                  <Line type="monotone" dataKey="light_level" stroke="hsl(var(--warning, 45 95% 60%))" strokeWidth={1.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
