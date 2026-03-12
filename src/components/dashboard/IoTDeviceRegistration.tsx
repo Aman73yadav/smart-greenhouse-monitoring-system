@@ -8,9 +8,18 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity } from 'lucide-react';
+import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, ResponsiveContainer, ReferenceLine, YAxis } from 'recharts';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Slider } from '@/components/ui/slider';
+
+interface ThresholdConfig {
+  temperature: { min: number; max: number };
+  humidity: { min: number; max: number };
+  soil_moisture: { min: number; max: number };
+  light_level: { min: number; max: number };
+}
 
 interface RegisteredDevice {
   id: string;
@@ -33,11 +42,18 @@ interface DeviceSensorReading {
   recorded_at: string;
 }
 
-const THRESHOLDS = {
-  temperature: { max: 35, min: 10, label: '°C' },
-  humidity: { max: 85, min: 30, label: '%' },
-  soil_moisture: { max: 80, min: 20, label: '%' },
-  light_level: { max: 50000, min: 2000, label: 'lux' },
+const DEFAULT_THRESHOLDS: ThresholdConfig = {
+  temperature: { max: 35, min: 10 },
+  humidity: { max: 85, min: 30 },
+  soil_moisture: { max: 80, min: 20 },
+  light_level: { max: 50000, min: 2000 },
+};
+
+const THRESHOLD_RANGES = {
+  temperature: { absMin: -10, absMax: 60, step: 1, label: '°C' },
+  humidity: { absMin: 0, absMax: 100, step: 1, label: '%' },
+  soil_moisture: { absMin: 0, absMax: 100, step: 1, label: '%' },
+  light_level: { absMin: 0, absMax: 100000, step: 500, label: 'lux' },
 };
 
 export const IoTDeviceRegistration = () => {
@@ -49,7 +65,32 @@ export const IoTDeviceRegistration = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [, setTick] = useState(0); // force re-render for relative timestamps
+  const [, setTick] = useState(0);
+  const [deviceThresholds, setDeviceThresholds] = useState<Record<string, ThresholdConfig>>(() => {
+    try {
+      const saved = localStorage.getItem('iot-device-thresholds');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const getThresholds = useCallback((deviceId: string): ThresholdConfig => {
+    return deviceThresholds[deviceId] || DEFAULT_THRESHOLDS;
+  }, [deviceThresholds]);
+
+  const updateThreshold = useCallback((deviceId: string, metric: keyof ThresholdConfig, field: 'min' | 'max', value: number) => {
+    setDeviceThresholds(prev => {
+      const current = prev[deviceId] || { ...DEFAULT_THRESHOLDS };
+      const updated = {
+        ...prev,
+        [deviceId]: {
+          ...current,
+          [metric]: { ...current[metric], [field]: value },
+        },
+      };
+      localStorage.setItem('iot-device-thresholds', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   // Tick every 10s to keep relative timestamps fresh
   useEffect(() => {
@@ -348,14 +389,79 @@ export const IoTDeviceRegistration = () => {
                       {device.status || 'offline'}
                     </Badge>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive/60 hover:text-destructive"
-                    onClick={() => handleDelete(device.id)}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                          <Settings2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72" align="end">
+                        <div className="space-y-3">
+                          <p className="text-sm font-medium">Alert Thresholds</p>
+                          {(Object.keys(THRESHOLD_RANGES) as Array<keyof ThresholdConfig>).map(metric => {
+                            const range = THRESHOLD_RANGES[metric];
+                            const current = getThresholds(device.id)[metric];
+                            return (
+                              <div key={metric} className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-xs capitalize">{metric.replace('_', ' ')}</Label>
+                                  <span className="text-[10px] text-muted-foreground">{current.min} – {current.max} {range.label}</span>
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground w-6">Min</span>
+                                    <Slider
+                                      min={range.absMin}
+                                      max={current.max - range.step}
+                                      step={range.step}
+                                      value={[current.min]}
+                                      onValueChange={([v]) => updateThreshold(device.id, metric, 'min', v)}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-destructive w-6">Max</span>
+                                    <Slider
+                                      min={current.min + range.step}
+                                      max={range.absMax}
+                                      step={range.step}
+                                      value={[current.max]}
+                                      onValueChange={([v]) => updateThreshold(device.id, metric, 'max', v)}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => {
+                              setDeviceThresholds(prev => {
+                                const updated = { ...prev };
+                                delete updated[device.id];
+                                localStorage.setItem('iot-device-thresholds', JSON.stringify(updated));
+                                return updated;
+                              });
+                            }}
+                          >
+                            Reset to Defaults
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive/60 hover:text-destructive"
+                      onClick={() => handleDelete(device.id)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div>
@@ -450,7 +556,7 @@ export const IoTDeviceRegistration = () => {
                     {deviceHistory[device.id] && deviceHistory[device.id].length > 1 && (
                       <div className="grid grid-cols-2 gap-2 pt-1">
                         {deviceHistory[device.id][0].temperature !== null && (() => {
-                          const t = THRESHOLDS.temperature;
+                          const t = getThresholds(device.id).temperature;
                           const vals = deviceHistory[device.id].map(d => d.temperature ?? 0);
                           const domain = [Math.min(...vals, t.min) - 2, Math.max(...vals, t.max) + 2];
                           return (
@@ -470,7 +576,7 @@ export const IoTDeviceRegistration = () => {
                           );
                         })()}
                         {deviceHistory[device.id][0].humidity !== null && (() => {
-                          const t = THRESHOLDS.humidity;
+                          const t = getThresholds(device.id).humidity;
                           const vals = deviceHistory[device.id].map(d => d.humidity ?? 0);
                           const domain = [Math.min(...vals, t.min) - 5, Math.max(...vals, t.max) + 5];
                           return (
@@ -490,7 +596,7 @@ export const IoTDeviceRegistration = () => {
                           );
                         })()}
                         {deviceHistory[device.id][0].soil_moisture !== null && (() => {
-                          const t = THRESHOLDS.soil_moisture;
+                          const t = getThresholds(device.id).soil_moisture;
                           const vals = deviceHistory[device.id].map(d => d.soil_moisture ?? 0);
                           const domain = [Math.min(...vals, t.min) - 5, Math.max(...vals, t.max) + 5];
                           return (
@@ -510,7 +616,7 @@ export const IoTDeviceRegistration = () => {
                           );
                         })()}
                         {deviceHistory[device.id][0].light_level !== null && (() => {
-                          const t = THRESHOLDS.light_level;
+                          const t = getThresholds(device.id).light_level;
                           const vals = deviceHistory[device.id].map(d => d.light_level ?? 0);
                           const domain = [Math.min(...vals, t.min) - 500, Math.max(...vals, t.max) + 500];
                           return (
