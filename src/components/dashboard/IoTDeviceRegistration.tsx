@@ -65,7 +65,32 @@ export const IoTDeviceRegistration = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [, setTick] = useState(0); // force re-render for relative timestamps
+  const [, setTick] = useState(0);
+  const [deviceThresholds, setDeviceThresholds] = useState<Record<string, ThresholdConfig>>(() => {
+    try {
+      const saved = localStorage.getItem('iot-device-thresholds');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const getThresholds = useCallback((deviceId: string): ThresholdConfig => {
+    return deviceThresholds[deviceId] || DEFAULT_THRESHOLDS;
+  }, [deviceThresholds]);
+
+  const updateThreshold = useCallback((deviceId: string, metric: keyof ThresholdConfig, field: 'min' | 'max', value: number) => {
+    setDeviceThresholds(prev => {
+      const current = prev[deviceId] || { ...DEFAULT_THRESHOLDS };
+      const updated = {
+        ...prev,
+        [deviceId]: {
+          ...current,
+          [metric]: { ...current[metric], [field]: value },
+        },
+      };
+      localStorage.setItem('iot-device-thresholds', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   // Tick every 10s to keep relative timestamps fresh
   useEffect(() => {
