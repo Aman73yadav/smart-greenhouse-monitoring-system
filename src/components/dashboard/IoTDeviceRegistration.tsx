@@ -144,17 +144,19 @@ export const IoTDeviceRegistration = () => {
         (payload) => {
           const r = payload.new as any;
           if (r.device_id) {
-            setDeviceReadings(prev => ({
-              ...prev,
-              [r.device_id]: {
-                temperature: r.temperature,
-                humidity: r.humidity,
-                soil_moisture: r.soil_moisture,
-                light_level: r.light_level,
-                co2_level: r.co2_level,
-                recorded_at: r.recorded_at,
-              },
-            }));
+            const reading: DeviceSensorReading = {
+              temperature: r.temperature,
+              humidity: r.humidity,
+              soil_moisture: r.soil_moisture,
+              light_level: r.light_level,
+              co2_level: r.co2_level,
+              recorded_at: r.recorded_at,
+            };
+            setDeviceReadings(prev => ({ ...prev, [r.device_id]: reading }));
+            setDeviceHistory(prev => {
+              const existing = prev[r.device_id] || [];
+              return { ...prev, [r.device_id]: [...existing, reading].slice(-10) };
+            });
             // Flash effect
             setRecentlyUpdated(prev => ({ ...prev, [r.device_id]: true }));
             setTimeout(() => {
