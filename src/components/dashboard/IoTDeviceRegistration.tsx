@@ -42,11 +42,18 @@ interface DeviceSensorReading {
   recorded_at: string;
 }
 
-const THRESHOLDS = {
-  temperature: { max: 35, min: 10, label: '°C' },
-  humidity: { max: 85, min: 30, label: '%' },
-  soil_moisture: { max: 80, min: 20, label: '%' },
-  light_level: { max: 50000, min: 2000, label: 'lux' },
+const DEFAULT_THRESHOLDS: ThresholdConfig = {
+  temperature: { max: 35, min: 10 },
+  humidity: { max: 85, min: 30 },
+  soil_moisture: { max: 80, min: 20 },
+  light_level: { max: 50000, min: 2000 },
+};
+
+const THRESHOLD_RANGES = {
+  temperature: { absMin: -10, absMax: 60, step: 1, label: '°C' },
+  humidity: { absMin: 0, absMax: 100, step: 1, label: '%' },
+  soil_moisture: { absMin: 0, absMax: 100, step: 1, label: '%' },
+  light_level: { absMin: 0, absMax: 100000, step: 500, label: 'lux' },
 };
 
 export const IoTDeviceRegistration = () => {
