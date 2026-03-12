@@ -90,19 +90,36 @@ export const IoTDeviceRegistration = () => {
 
         if (readings) {
           const latestByDevice: Record<string, DeviceSensorReading> = {};
+          const historyByDevice: Record<string, DeviceSensorReading[]> = {};
           readings.forEach(r => {
-            if (r.device_id && !latestByDevice[r.device_id]) {
-              latestByDevice[r.device_id] = {
-                temperature: r.temperature,
-                humidity: r.humidity,
-                soil_moisture: r.soil_moisture,
-                light_level: r.light_level,
-                co2_level: r.co2_level,
-                recorded_at: r.recorded_at,
-              };
+            if (r.device_id) {
+              if (!latestByDevice[r.device_id]) {
+                latestByDevice[r.device_id] = {
+                  temperature: r.temperature,
+                  humidity: r.humidity,
+                  soil_moisture: r.soil_moisture,
+                  light_level: r.light_level,
+                  co2_level: r.co2_level,
+                  recorded_at: r.recorded_at,
+                };
+              }
+              if (!historyByDevice[r.device_id]) historyByDevice[r.device_id] = [];
+              if (historyByDevice[r.device_id].length < 10) {
+                historyByDevice[r.device_id].push({
+                  temperature: r.temperature,
+                  humidity: r.humidity,
+                  soil_moisture: r.soil_moisture,
+                  light_level: r.light_level,
+                  co2_level: r.co2_level,
+                  recorded_at: r.recorded_at,
+                });
+              }
             }
           });
+          // Reverse history so oldest first for sparkline
+          Object.keys(historyByDevice).forEach(k => historyByDevice[k].reverse());
           setDeviceReadings(latestByDevice);
+          setDeviceHistory(historyByDevice);
         }
       }
     }
