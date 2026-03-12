@@ -8,9 +8,18 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity } from 'lucide-react';
+import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, ResponsiveContainer, ReferenceLine, YAxis } from 'recharts';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Slider } from '@/components/ui/slider';
+
+interface ThresholdConfig {
+  temperature: { min: number; max: number };
+  humidity: { min: number; max: number };
+  soil_moisture: { min: number; max: number };
+  light_level: { min: number; max: number };
+}
 
 interface RegisteredDevice {
   id: string;
