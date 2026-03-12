@@ -616,7 +616,7 @@ export const IoTDeviceRegistration = () => {
                           );
                         })()}
                         {deviceHistory[device.id][0].light_level !== null && (() => {
-                          const t = THRESHOLDS.light_level;
+                          const t = getThresholds(device.id).light_level;
                           const vals = deviceHistory[device.id].map(d => d.light_level ?? 0);
                           const domain = [Math.min(...vals, t.min) - 500, Math.max(...vals, t.max) + 500];
                           return (
