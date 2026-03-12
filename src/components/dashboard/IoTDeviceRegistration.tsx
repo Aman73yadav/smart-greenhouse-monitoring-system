@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Plus, Copy, Check, Trash2, Wifi, WifiOff, Battery, Signal, RefreshCw, Thermometer, Droplets, Sun, Wind, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
 interface RegisteredDevice {
   id: string;
