@@ -576,7 +576,7 @@ export const IoTDeviceRegistration = () => {
                           );
                         })()}
                         {deviceHistory[device.id][0].humidity !== null && (() => {
-                          const t = THRESHOLDS.humidity;
+                          const t = getThresholds(device.id).humidity;
                           const vals = deviceHistory[device.id].map(d => d.humidity ?? 0);
                           const domain = [Math.min(...vals, t.min) - 5, Math.max(...vals, t.max) + 5];
                           return (
