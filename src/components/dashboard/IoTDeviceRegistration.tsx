@@ -37,6 +37,7 @@ export const IoTDeviceRegistration = () => {
   const { user } = useAuth();
   const [devices, setDevices] = useState<RegisteredDevice[]>([]);
   const [deviceReadings, setDeviceReadings] = useState<Record<string, DeviceSensorReading>>({});
+  const [deviceHistory, setDeviceHistory] = useState<Record<string, DeviceSensorReading[]>>({});
   const [recentlyUpdated, setRecentlyUpdated] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
