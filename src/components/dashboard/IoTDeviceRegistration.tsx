@@ -596,7 +596,7 @@ export const IoTDeviceRegistration = () => {
                           );
                         })()}
                         {deviceHistory[device.id][0].soil_moisture !== null && (() => {
-                          const t = THRESHOLDS.soil_moisture;
+                          const t = getThresholds(device.id).soil_moisture;
                           const vals = deviceHistory[device.id].map(d => d.soil_moisture ?? 0);
                           const domain = [Math.min(...vals, t.min) - 5, Math.max(...vals, t.max) + 5];
                           return (
