@@ -657,6 +657,9 @@ export const IoTDeviceRegistration = () => {
           ))}
         </div>
       )}
+
+      {/* Circuit Simulator */}
+      <CircuitSimulator devices={devices.map(d => ({ id: d.id, device_name: d.device_name }))} />
     </div>
   );
 };
