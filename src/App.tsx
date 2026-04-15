@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ResearchComparison from "./pages/ResearchComparison";
+import ProjectResume from "./pages/ProjectResume";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             }
           />
           <Route path="/research-comparison" element={<ResearchComparison />} />
+          <Route path="/resume" element={<ProjectResume />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
