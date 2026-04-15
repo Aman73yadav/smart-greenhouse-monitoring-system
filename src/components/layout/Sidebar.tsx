@@ -10,9 +10,11 @@ import {
   Bell,
   Menu,
   X,
-  Box
+  Box,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 interface SidebarProps {
   activeTab: string;
@@ -108,12 +110,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                   <span>Active Zones</span>
                   <span className="text-foreground">4/5</span>
                 </div>
-                <div className="flex justify-between">
+              <div className="flex justify-between">
                   <span>Uptime</span>
                   <span className="text-foreground">99.8%</span>
                 </div>
               </div>
             </div>
+            
+            {/* Resume Link */}
+            <Link 
+              to="/resume"
+              className="flex items-center gap-2 p-3 mt-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
+              <FileText className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Project Resume</span>
+            </Link>
           </div>
         </div>
       </aside>
